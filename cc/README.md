@@ -1,0 +1,3 @@
+# CC
+
+Conventional commit cli
