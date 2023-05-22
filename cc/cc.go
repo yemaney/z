@@ -126,3 +126,23 @@ func (c *CLI) readLine() string {
 	c.In.Scan()
 	return c.In.Text()
 }
+
+func (c *CLI) buildMessage() {
+	message := ""
+	message += c.cc.typ
+	message += c.cc.scope
+	message += ": "
+	message += c.cc.subject
+
+	if c.cc.body != "" {
+		message += "\n"
+		message += c.cc.body
+	}
+
+	if c.cc.footer != "" {
+		message += "\n"
+		message += c.cc.footer
+	}
+
+	c.cc.message = message
+}

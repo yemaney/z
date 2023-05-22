@@ -214,6 +214,30 @@ func TestBodyAndFooter(t *testing.T) {
 
 }
 
+func TestMessage(t *testing.T) {
+	t.Run("Conventional commit created", func(t *testing.T) {
+		typ := "1"
+		scope := "dummy scope"
+		subject := "dummy subject"
+		body := "dummy body"
+		footer := "dummmy footer"
+		_, cli := mockCLI(typ, scope, subject, body, footer)
+
+		cli.readType()
+		cli.readScope()
+		cli.readSubject()
+		cli.readBodyAndFooter()
+		cli.buildMessage()
+
+		got := cli.cc.message
+		want := CCTypeMap[typ] + "(" + scope + "): " + subject + "\n" + body + "\n" + footer
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+}
+
 func userSends(messages ...string) io.Reader {
 	return strings.NewReader(strings.Join(messages, "\n"))
 }
