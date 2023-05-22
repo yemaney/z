@@ -13,6 +13,7 @@ func CCommit() {
 	cli.writeTypesPrompt()
 	cli.readType()
 	cli.readScope()
+	cli.readSubject()
 }
 
 // Struct that defines the cli for this package.
@@ -68,7 +69,7 @@ func (c *CLI) readType() {
 		}
 	}
 
-	c.cc.cctype = cctype
+	c.cc.typ = cctype
 }
 
 // readScope takes input and sets a scope for the conventional commit
@@ -83,8 +84,38 @@ func (c *CLI) readScope() {
 	c.cc.scope = input
 }
 
+func (c *CLI) readSubject() {
+	fmt.Fprint(c.Out, "Enter a subject: ")
+
+	fails := 0
+	var subject string
+	for {
+		input := c.readLine()
+
+		if input != "" {
+			subject = input
+			break
+		} else {
+			if fails > 1 {
+				break
+			}
+			fails++
+			fmt.Fprint(c.Out, "Enter a subject: ")
+		}
+	}
+
+	c.cc.subject = subject
+
+}
+
 // readLine reads a line from the CLI's input
 func (c *CLI) readLine() string {
 	c.In.Scan()
 	return c.In.Text()
 }
+
+// <type>(<scope>): <subject>
+// <BLANK LINE>
+// <body>
+// <BLANK LINE>
+// <footer>

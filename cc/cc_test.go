@@ -80,8 +80,8 @@ func TestTypes(t *testing.T) {
 
 			cli.readType()
 
-			if cli.cc.cctype != tC.want {
-				t.Errorf("got %q want %q", cli.cc.cctype, tC.want)
+			if cli.cc.typ != tC.want {
+				t.Errorf("got %q want %q", cli.cc.typ, tC.want)
 			}
 		}
 	})
@@ -136,6 +136,46 @@ func TestScope(t *testing.T) {
 		cli.readScope()
 
 		got := cli.cc.scope
+		want := ""
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+}
+
+func TestSubject(t *testing.T) {
+
+	t.Run("Subject set correctly", func(t *testing.T) {
+		subject := "add github action to run tests"
+		buffer := bytes.Buffer{}
+		in := userSends(subject)
+		cli := NewCLI(&buffer, in)
+
+		cli.readSubject()
+
+		promptGot := buffer.String()
+		promptWant := "Enter a subject: "
+		if promptGot != promptWant {
+			t.Errorf("got %q want %q", promptGot, promptWant)
+		}
+
+		got := cli.cc.subject
+		want := subject
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+
+	t.Run("Empty subject not set", func(t *testing.T) {
+		buffer := bytes.Buffer{}
+		in := userSends("")
+		cli := NewCLI(&buffer, in)
+
+		cli.readScope()
+
+		got := cli.cc.subject
 		want := ""
 
 		if got != want {
