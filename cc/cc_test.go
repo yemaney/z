@@ -86,8 +86,31 @@ func TestTypes(t *testing.T) {
 		}
 	})
 
+	t.Run("Type chosen incorrectly results in prompt", func(t *testing.T) {
+		buffer := bytes.Buffer{}
+		in := userSends("")
+		cli := NewCLI(&buffer, in)
+
+		cli.readType()
+
+		got := buffer.String()
+		want := typeErrorMsg()
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+
+	})
 }
 
 func userSends(messages ...string) io.Reader {
 	return strings.NewReader(strings.Join(messages, "\n"))
+}
+
+func typeErrorMsg() string  {
+	msg := ""
+	for i := 0; i < 2; i++ {
+		msg += "Enter a valid number between 0 and 10: "
+	}
+	return msg
 }

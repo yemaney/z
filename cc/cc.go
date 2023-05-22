@@ -45,9 +45,29 @@ func getTypesPrompt() string {
 	return typesString
 }
 
+// readType will try to get a conventional commit type from the number input from user.
+// Will retry after an invalid input for three times before exiting the program..
 func (c *CLI) readType() {
-	input := c.readLine()
-	c.cc.cctype = CCTypeMap[input]
+
+	fails := 0
+	var cctype string
+	for {
+		input := c.readLine()
+		val, ok := CCTypeMap[input]
+
+		if ok {
+			cctype = val
+			break
+		} else {
+			if fails > 1 {
+				break
+			}
+			fails++
+			fmt.Fprint(c.Out, "Enter a valid number between 0 and 10: ")
+		}
+	}
+
+	c.cc.cctype = cctype
 }
 
 // readLine reads a line from the CLI's input
