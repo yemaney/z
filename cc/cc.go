@@ -12,6 +12,7 @@ func CCommit() {
 	cli := NewCLI(os.Stdout, os.Stdin)
 	cli.writeTypesPrompt()
 	cli.readType()
+	cli.readScope()
 }
 
 // Struct that defines the cli for this package.
@@ -72,6 +73,8 @@ func (c *CLI) readType() {
 
 // readScope takes input and sets a scope for the conventional commit
 func (c *CLI) readScope() {
+	fmt.Fprint(c.Out, "Enter a scope: ")
+
 	input := c.readLine()
 	if input != "" {
 		input = "(" + input + ")"

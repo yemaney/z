@@ -113,6 +113,12 @@ func TestScope(t *testing.T) {
 		cli.readType()
 		cli.readScope()
 
+		promptGot := buffer.String()
+		promptWant := "Enter a scope: "
+		if promptGot != promptWant {
+			t.Errorf("got %q want %q", promptGot, promptWant)
+		}
+
 		got := cli.cc.scope
 		want := "(dependency)"
 
