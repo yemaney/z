@@ -22,11 +22,19 @@ func NewCLI(out io.Writer, in io.Reader) *CLI {
 }
 
 // writes conventional commit type options
-func (c *CLI) writeTypes() {
+func (c *CLI) writeTypesPrompt() {
+	prompt := getTypesPrompt()
+	fmt.Fprint(c.Out, prompt)
+}
 
+// getTypesPrompt combines all conventional commit types options into one prompt
+func getTypesPrompt() string {
+	typesString := ""
 	for _, v := range types {
-		fmt.Fprint(c.Out, v)
+		typesString += v
 	}
+	typesString += "\nEnter a number between 0 and 10: "
+	return typesString
 }
 
 func (c *CLI) readType() {

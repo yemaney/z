@@ -13,10 +13,10 @@ func TestTypes(t *testing.T) {
 		in := userSends("")
 		cli := NewCLI(&buffer, in)
 
-		cli.writeTypes()
+		cli.writeTypesPrompt()
 
 		got := buffer.String()
-		want := getTypes()
+		want := getTypesPrompt()
 
 		if got != want {
 			t.Errorf("got %q want %q", got, want)
@@ -78,25 +78,14 @@ func TestTypes(t *testing.T) {
 			in := userSends(tC.in)
 			cli := NewCLI(&buffer, in)
 
-			cli.writeTypes()
 			cli.readType()
 
 			if cli.cc.cctype != tC.want {
-				t.Errorf("got %q want %q",  cli.cc.cctype, tC.want)
+				t.Errorf("got %q want %q", cli.cc.cctype, tC.want)
 			}
 		}
 	})
 
-}
-
-// combines all conventional commit type optoins into one string
-func getTypes() string {
-	typesString := ""
-	for _, v := range types {
-		typesString += v
-	}
-
-	return typesString
 }
 
 func userSends(messages ...string) io.Reader {
