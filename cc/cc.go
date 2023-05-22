@@ -16,7 +16,7 @@ func CCommit() {
 	cli.readSubject()
 }
 
-// Struct that defines the cli for this package.
+// CLI defines the cli for this package.
 type CLI struct {
 	Out io.Writer
 	In  *bufio.Scanner
@@ -31,7 +31,7 @@ func NewCLI(out io.Writer, in io.Reader) *CLI {
 	}
 }
 
-// writes conventional commit type options
+// writeTypesPrompt writes conventional commit type options
 func (c *CLI) writeTypesPrompt() {
 	prompt := getTypesPrompt()
 	fmt.Fprint(c.Out, prompt)
@@ -47,7 +47,7 @@ func getTypesPrompt() string {
 	return typesString
 }
 
-// readType will try to get a conventional commit type from the number input from user.
+// readType will try to set a conventional commit type from the number input from user.
 // Will retry after an invalid input for three times before exiting the program.
 func (c *CLI) readType() {
 
@@ -84,6 +84,8 @@ func (c *CLI) readScope() {
 	c.cc.scope = input
 }
 
+// readSubject will try to set a conventional commit subject from the user input.
+// Will retry after an invalid input for three times before exiting the program.
 func (c *CLI) readSubject() {
 	fmt.Fprint(c.Out, "Enter a subject: ")
 
@@ -113,9 +115,3 @@ func (c *CLI) readLine() string {
 	c.In.Scan()
 	return c.In.Text()
 }
-
-// <type>(<scope>): <subject>
-// <BLANK LINE>
-// <body>
-// <BLANK LINE>
-// <footer>
