@@ -9,9 +9,7 @@ import (
 
 func TestTypes(t *testing.T) {
 	t.Run("Types written correctly", func(t *testing.T) {
-		buffer := bytes.Buffer{}
-		in := userSends("")
-		cli := NewCLI(&buffer, in)
+		buffer, cli := mockCLI("")
 
 		cli.writeTypesPrompt()
 
@@ -74,9 +72,7 @@ func TestTypes(t *testing.T) {
 			},
 		}
 		for _, tC := range testCases {
-			buffer := bytes.Buffer{}
-			in := userSends(tC.in)
-			cli := NewCLI(&buffer, in)
+			_, cli := mockCLI(tC.in)
 
 			cli.readType()
 
@@ -87,9 +83,7 @@ func TestTypes(t *testing.T) {
 	})
 
 	t.Run("Type chosen incorrectly results in prompt", func(t *testing.T) {
-		buffer := bytes.Buffer{}
-		in := userSends("")
-		cli := NewCLI(&buffer, in)
+		buffer, cli := mockCLI("")
 
 		cli.readType()
 
@@ -106,11 +100,8 @@ func TestTypes(t *testing.T) {
 func TestScope(t *testing.T) {
 
 	t.Run("Scope set correctly", func(t *testing.T) {
-		buffer := bytes.Buffer{}
-		in := userSends("0", "dependency")
-		cli := NewCLI(&buffer, in)
 
-		cli.readType()
+		buffer, cli := mockCLI("dependency")
 		cli.readScope()
 
 		promptGot := buffer.String()
@@ -128,12 +119,15 @@ func TestScope(t *testing.T) {
 	})
 
 	t.Run("Empty scope not set", func(t *testing.T) {
-		buffer := bytes.Buffer{}
-		in := userSends("0", "")
-		cli := NewCLI(&buffer, in)
 
-		cli.readType()
+		buffer, cli := mockCLI("")
 		cli.readScope()
+
+		promptGot := buffer.String()
+		promptWant := "Enter a scope: "
+		if promptGot != promptWant {
+			t.Errorf("got %q want %q", promptGot, promptWant)
+		}
 
 		got := cli.cc.scope
 		want := ""
@@ -147,10 +141,9 @@ func TestScope(t *testing.T) {
 func TestSubject(t *testing.T) {
 
 	t.Run("Subject set correctly", func(t *testing.T) {
+
 		subject := "add github action to run tests"
-		buffer := bytes.Buffer{}
-		in := userSends(subject)
-		cli := NewCLI(&buffer, in)
+		buffer, cli := mockCLI(subject)
 
 		cli.readSubject()
 
@@ -169,11 +162,15 @@ func TestSubject(t *testing.T) {
 	})
 
 	t.Run("Empty subject not set", func(t *testing.T) {
-		buffer := bytes.Buffer{}
-		in := userSends("")
-		cli := NewCLI(&buffer, in)
+		buffer, cli := mockCLI("")
 
-		cli.readScope()
+		cli.readSubject()
+
+		promptGot := buffer.String()
+		promptWant := "Enter a subject: Enter a subject: Enter a subject: "
+		if promptGot != promptWant {
+			t.Errorf("got %q want %q", promptGot, promptWant)
+		}
 
 		got := cli.cc.subject
 		want := ""
@@ -187,11 +184,10 @@ func TestSubject(t *testing.T) {
 func TestBodyAndFooter(t *testing.T) {
 
 	t.Run("Body and Footer Correctly Set", func(t *testing.T) {
+
 		dummyBody := "body"
 		dummyFooter := "footer"
-		buffer := bytes.Buffer{}
-		in := userSends(dummyBody, dummyFooter)
-		cli := NewCLI(&buffer, in)
+		buffer, cli := mockCLI(dummyBody, dummyFooter)
 
 		cli.readBodyAndFooter()
 
@@ -228,4 +224,11 @@ func typeErrorMsg() string {
 		msg += "Enter a valid number between 0 and 10: "
 	}
 	return msg
+}
+
+func mockCLI(messages ...string) (*bytes.Buffer, *CLI) {
+	buffer := bytes.Buffer{}
+	in := userSends(messages...)
+	cli := NewCLI(&buffer, in)
+	return &buffer, cli
 }
