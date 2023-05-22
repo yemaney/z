@@ -184,6 +184,40 @@ func TestSubject(t *testing.T) {
 	})
 }
 
+func TestBodyAndFooter(t *testing.T) {
+
+	t.Run("Body and Footer Correctly Set", func(t *testing.T) {
+		dummyBody := "body"
+		dummyFooter := "footer"
+		buffer := bytes.Buffer{}
+		in := userSends(dummyBody, dummyFooter)
+		cli := NewCLI(&buffer, in)
+
+		cli.readBodyAndFooter()
+
+		promptGot := buffer.String()
+		promptWant := "Enter a body: Enter a footer: "
+		if promptGot != promptWant {
+			t.Errorf("got %q want %q", promptGot, promptWant)
+		}
+
+		gotBody := cli.cc.body
+		wantBody := dummyBody
+
+		if gotBody != wantBody {
+			t.Errorf("got %q want %q", gotBody, wantBody)
+		}
+
+		gotFooter := cli.cc.footer
+		wantFooter := dummyFooter
+
+		if gotFooter != wantFooter {
+			t.Errorf("got %q want %q", gotFooter, wantFooter)
+		}
+	})
+
+}
+
 func userSends(messages ...string) io.Reader {
 	return strings.NewReader(strings.Join(messages, "\n"))
 }

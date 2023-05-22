@@ -14,6 +14,7 @@ func CCommit() {
 	cli.readType()
 	cli.readScope()
 	cli.readSubject()
+	cli.readBodyAndFooter()
 }
 
 // CLI defines the cli for this package.
@@ -107,7 +108,17 @@ func (c *CLI) readSubject() {
 	}
 
 	c.cc.subject = subject
+}
 
+// readBodyAndFooter will try to set a body and footer for the conventional commit.
+func (c *CLI) readBodyAndFooter() {
+	fmt.Fprint(c.Out, "Enter a body: ")
+	inputBody := c.readLine()
+	c.cc.body = inputBody
+
+	fmt.Fprint(c.Out, "Enter a footer: ")
+	inputFooter := c.readLine()
+	c.cc.footer = inputFooter
 }
 
 // readLine reads a line from the CLI's input

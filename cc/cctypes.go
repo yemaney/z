@@ -5,6 +5,8 @@ type CC struct {
 	typ     string
 	scope   string
 	subject string
+	body    string
+	footer  string
 }
 
 // An array of strings corrosponding to a type used in a conventional commit.
