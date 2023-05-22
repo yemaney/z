@@ -4,7 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 )
+
+// CCommit uses the CLI to to create a conventional commit
+func CCommit() {
+	cli := NewCLI(os.Stdout, os.Stdin)
+	cli.writeTypesPrompt()
+	cli.readType()
+}
 
 // Struct that defines the cli for this package.
 type CLI struct {
