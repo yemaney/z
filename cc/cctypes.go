@@ -3,6 +3,7 @@ package cc
 // CC represents a conventional commit
 type CC struct {
 	cctype string
+	scope  string
 }
 
 // An array of strings corrosponding to a type used in a conventional commit.

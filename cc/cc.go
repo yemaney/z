@@ -46,7 +46,7 @@ func getTypesPrompt() string {
 }
 
 // readType will try to get a conventional commit type from the number input from user.
-// Will retry after an invalid input for three times before exiting the program..
+// Will retry after an invalid input for three times before exiting the program.
 func (c *CLI) readType() {
 
 	fails := 0
@@ -68,6 +68,16 @@ func (c *CLI) readType() {
 	}
 
 	c.cc.cctype = cctype
+}
+
+// readScope takes input and sets a scope for the conventional commit
+func (c *CLI) readScope() {
+	input := c.readLine()
+	if input != "" {
+		input = "(" + input + ")"
+	}
+
+	c.cc.scope = input
 }
 
 // readLine reads a line from the CLI's input

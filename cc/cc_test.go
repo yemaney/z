@@ -103,11 +103,46 @@ func TestTypes(t *testing.T) {
 	})
 }
 
+func TestScope(t *testing.T) {
+
+	t.Run("Scope set correctly", func(t *testing.T) {
+		buffer := bytes.Buffer{}
+		in := userSends("0", "dependency")
+		cli := NewCLI(&buffer, in)
+
+		cli.readType()
+		cli.readScope()
+
+		got := cli.cc.scope
+		want := "(dependency)"
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+
+	t.Run("Empty scope not set", func(t *testing.T) {
+		buffer := bytes.Buffer{}
+		in := userSends("0", "")
+		cli := NewCLI(&buffer, in)
+
+		cli.readType()
+		cli.readScope()
+
+		got := cli.cc.scope
+		want := ""
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+}
+
 func userSends(messages ...string) io.Reader {
 	return strings.NewReader(strings.Join(messages, "\n"))
 }
 
-func typeErrorMsg() string  {
+func typeErrorMsg() string {
 	msg := ""
 	for i := 0; i < 2; i++ {
 		msg += "Enter a valid number between 0 and 10: "
