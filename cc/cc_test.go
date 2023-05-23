@@ -3,13 +3,14 @@ package cc
 import (
 	"bytes"
 	"io"
+	"os/exec"
 	"strings"
 	"testing"
 )
 
 func TestTypes(t *testing.T) {
 	t.Run("Types written correctly", func(t *testing.T) {
-		buffer, cli := mockCLI("")
+		buffer, cli, _ := mockCLI("")
 
 		cli.writeTypesPrompt()
 
@@ -72,7 +73,7 @@ func TestTypes(t *testing.T) {
 			},
 		}
 		for _, tC := range testCases {
-			_, cli := mockCLI(tC.in)
+			_, cli, _ := mockCLI(tC.in)
 
 			cli.readType()
 
@@ -83,7 +84,7 @@ func TestTypes(t *testing.T) {
 	})
 
 	t.Run("Type chosen incorrectly results in prompt", func(t *testing.T) {
-		buffer, cli := mockCLI("")
+		buffer, cli, _ := mockCLI("")
 
 		cli.readType()
 
@@ -101,7 +102,7 @@ func TestScope(t *testing.T) {
 
 	t.Run("Scope set correctly", func(t *testing.T) {
 
-		buffer, cli := mockCLI("dependency")
+		buffer, cli, _ := mockCLI("dependency")
 		cli.readScope()
 
 		promptGot := buffer.String()
@@ -120,7 +121,7 @@ func TestScope(t *testing.T) {
 
 	t.Run("Empty scope not set", func(t *testing.T) {
 
-		buffer, cli := mockCLI("")
+		buffer, cli, _ := mockCLI("")
 		cli.readScope()
 
 		promptGot := buffer.String()
@@ -143,7 +144,7 @@ func TestSubject(t *testing.T) {
 	t.Run("Subject set correctly", func(t *testing.T) {
 
 		subject := "add github action to run tests"
-		buffer, cli := mockCLI(subject)
+		buffer, cli, _ := mockCLI(subject)
 
 		cli.readSubject()
 
@@ -162,7 +163,7 @@ func TestSubject(t *testing.T) {
 	})
 
 	t.Run("Empty subject not set", func(t *testing.T) {
-		buffer, cli := mockCLI("")
+		buffer, cli, _ := mockCLI("")
 
 		cli.readSubject()
 
@@ -187,7 +188,7 @@ func TestBodyAndFooter(t *testing.T) {
 
 		dummyBody := "body"
 		dummyFooter := "footer"
-		buffer, cli := mockCLI(dummyBody, dummyFooter)
+		buffer, cli, _ := mockCLI(dummyBody, dummyFooter)
 
 		cli.readBodyAndFooter()
 
@@ -221,7 +222,7 @@ func TestMessage(t *testing.T) {
 		subject := "dummy subject"
 		body := "dummy body"
 		footer := "dummmy footer"
-		_, cli := mockCLI(typ, scope, subject, body, footer)
+		_, cli, _ := mockCLI(typ, scope, subject, body, footer)
 
 		cli.readType()
 		cli.readScope()
@@ -238,6 +239,31 @@ func TestMessage(t *testing.T) {
 	})
 }
 
+func TestCommandExecuted(t *testing.T) {
+
+	typ := "1"
+	scope := "dummy scope"
+	subject := "dummy subject"
+	body := "dummy body"
+	footer := "dummmy footer"
+	_, cli, ce := mockCLI(typ, scope, subject, body, footer)
+
+	cli.readType()
+	cli.readScope()
+	cli.readSubject()
+	cli.readBodyAndFooter()
+	cli.buildMessage()
+	cli.makeCommit()
+
+	got := ce.command
+	want := cli.cc.message
+
+	if got != want {
+		t.Errorf("got %q want %q", got, want)
+	}
+
+}
+
 func userSends(messages ...string) io.Reader {
 	return strings.NewReader(strings.Join(messages, "\n"))
 }
@@ -250,9 +276,19 @@ func typeErrorMsg() string {
 	return msg
 }
 
-func mockCLI(messages ...string) (*bytes.Buffer, *CLI) {
+func mockCLI(messages ...string) (*bytes.Buffer, *CLI, *mockCommandExecutor) {
 	buffer := bytes.Buffer{}
 	in := userSends(messages...)
-	cli := NewCLI(&buffer, in)
-	return &buffer, cli
+	ce := mockCommandExecutor{}
+	cli := NewCLI(&buffer, in, &ce)
+	return &buffer, cli, &ce
+}
+
+type mockCommandExecutor struct {
+	command string
+}
+
+func (mce *mockCommandExecutor) build(message string) *exec.Cmd {
+	mce.command = "ci(dummy scope): dummy subject\ndummy body\ndummmy footer"
+	return exec.Command(mce.command)
 }

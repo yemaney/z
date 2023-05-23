@@ -9,12 +9,14 @@ import (
 
 // CCommit uses the CLI to to create a conventional commit
 func CCommit() {
-	cli := NewCLI(os.Stdout, os.Stdin)
+	cli := NewCLI(os.Stdout, os.Stdin, &CCExecutor{})
 	cli.writeTypesPrompt()
 	cli.readType()
 	cli.readScope()
 	cli.readSubject()
 	cli.readBodyAndFooter()
+	cli.buildMessage()
+	cli.makeCommit()
 }
 
 // CLI defines the cli for this package.
@@ -22,13 +24,15 @@ type CLI struct {
 	Out io.Writer
 	In  *bufio.Scanner
 	cc  CC
+	ce  CmdExecutor
 }
 
 // NewCLI creates a CLI for creating conventional commits
-func NewCLI(out io.Writer, in io.Reader) *CLI {
+func NewCLI(out io.Writer, in io.Reader, ce CmdExecutor) *CLI {
 	return &CLI{
 		Out: out,
 		In:  bufio.NewScanner(in),
+		ce:  ce,
 	}
 }
 
@@ -127,6 +131,7 @@ func (c *CLI) readLine() string {
 	return c.In.Text()
 }
 
+// buildMessage uses all the CC fields to create a conventional commit message
 func (c *CLI) buildMessage() {
 	message := ""
 	message += c.cc.typ
@@ -145,4 +150,11 @@ func (c *CLI) buildMessage() {
 	}
 
 	c.cc.message = message
+}
+
+// makeCommit runs the CmdExecutor *exec.Cmd to make a conventional commit with git
+func (c *CLI) makeCommit() {
+	cmd := c.ce.build(c.cc.message)
+	cmd.Stdout = c.Out
+	cmd.Run()
 }
