@@ -140,12 +140,12 @@ func (c *CLI) buildMessage() {
 	message += c.cc.subject
 
 	if c.cc.body != "" {
-		message += "\n"
+		message += "\n\n"
 		message += c.cc.body
 	}
 
 	if c.cc.footer != "" {
-		message += "\n"
+		message += "\n\n"
 		message += c.cc.footer
 	}
 

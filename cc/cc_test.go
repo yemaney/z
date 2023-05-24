@@ -231,7 +231,7 @@ func TestMessage(t *testing.T) {
 		cli.buildMessage()
 
 		got := cli.cc.message
-		want := CCTypeMap[typ] + "(" + scope + "): " + subject + "\n" + body + "\n" + footer
+		want := CCTypeMap[typ] + "(" + scope + "): " + subject + "\n\n" + body + "\n\n" + footer
 
 		if got != want {
 			t.Errorf("got %q want %q", got, want)
