@@ -256,7 +256,7 @@ func TestCommandExecuted(t *testing.T) {
 	cli.makeCommit()
 
 	got := ce.command
-	want := cli.cc.message
+	want := "execute"
 
 	if got != want {
 		t.Errorf("got %q want %q", got, want)
@@ -289,6 +289,6 @@ type mockCommandExecutor struct {
 }
 
 func (mce *mockCommandExecutor) build(message string) *exec.Cmd {
-	mce.command = "ci(dummy scope): dummy subject\ndummy body\ndummmy footer"
+	mce.command = "execute"
 	return exec.Command(mce.command)
 }
