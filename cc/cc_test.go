@@ -261,27 +261,75 @@ func TestMessage(t *testing.T) {
 	})
 }
 
-func TestCommandExecuted(t *testing.T) {
-
+func TestConfirmationPrompt(t *testing.T) {
 	typ := "1"
 	scope := "dummy scope"
 	subject := "dummy subject"
 	body := "dummy body"
 	footer := "dummmy footer"
-	_, cli, ce := mockCLI(typ, scope, subject, body, footer)
+	buffer, cli, _ := mockCLI(typ, scope, subject, body, footer)
 
 	cli.readType()
 	cli.readScope()
 	cli.readSubject()
 	cli.readBodyAndFooter()
 	cli.buildMessage()
-	cli.makeCommit()
+	cli.writeConfirmationPrompt()
 
-	got := ce.command
-	want := "execute"
+	// slice to ignore the other prompts
+	got := buffer.String()[62:]
+	wantMsg := CCTypeMap[typ] + "(" + scope + "): " + subject + "\n\n" + body + "\n\n" + footer
+	want := "\n\nPotential commit message:\n\n" + "\033[36;1m" + wantMsg + "\033[0m" + "\n\nCommit these changes with the message [y/N]: "
 
 	if got != want {
 		t.Errorf("got %q want %q", got, want)
+	}
+}
+
+func TestCommandExecuted(t *testing.T) {
+	typ := "1"
+	scope := "dummy scope"
+	subject := "dummy subject"
+	body := "dummy body"
+	footer := "dummmy footer"
+
+	testCases := []struct {
+		confirm string
+		want    string
+	}{
+		{
+			confirm: "y",
+			want:    "execute",
+		},
+		{
+			confirm: "YES",
+			want:    "execute",
+		}, {
+			confirm: "No",
+			want:    "",
+		}, {
+			confirm: "random",
+			want:    "",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.confirm + " confirmation", func(t *testing.T) {
+			_, cli, ce := mockCLI(typ, scope, subject, body, footer, tC.confirm)
+
+			cli.readType()
+			cli.readScope()
+			cli.readSubject()
+			cli.readBodyAndFooter()
+			cli.buildMessage()
+			cli.makeCommit()
+
+			got := ce.command
+			want := tC.want
+
+			if got != want {
+				t.Errorf("got %q want %q", got, want)
+			}
+		})
 	}
 
 }

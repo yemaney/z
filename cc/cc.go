@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 // CCommit uses the CLI to to create a conventional commit
@@ -152,9 +153,26 @@ func (c *CLI) buildMessage() {
 	c.cc.message = message
 }
 
-// makeCommit runs the CmdExecutor *exec.Cmd to make a conventional commit with git
+// writeConfirmationPrompt writes a message to the user asking them to confirm if they
+// want to make a commit with the message that was built.
+func (c *CLI) writeConfirmationPrompt() {
+	start := "\n\nPotential commit message:\n\n"
+	end := "\n\nCommit these changes with the message [y/N]: "
+	fmt.Fprint(c.Out, start+"\033[36;1m"+c.cc.message+"\033[0m"+end)
+}
+
+// makeCommit firsts prompts the user to confirm if they want to make a commit with the message.
+// If the user responds with either a "y" or "yes" it will build the  CmdExecutor *exec.Cmd
+// and run it to make a conventional commit with git
 func (c *CLI) makeCommit() {
-	cmd := c.ce.build(c.cc.message)
-	cmd.Stdout = c.Out
-	cmd.Run()
+	c.writeConfirmationPrompt()
+
+	input := strings.ToLower(c.readLine())
+
+	if input == "y" || input == "yes" {
+		cmd := c.ce.build(c.cc.message)
+		cmd.Stdout = c.Out
+		cmd.Run()
+	}
+
 }
