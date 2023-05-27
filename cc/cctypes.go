@@ -1,6 +1,8 @@
 package cc
 
-import "os/exec"
+import (
+	"os/exec"
+)
 
 // CC represents a conventional commit
 type CC struct {
@@ -10,6 +12,7 @@ type CC struct {
 	body    string
 	footer  string
 	message string
+	signed  bool
 }
 
 // An array of strings corrosponding to a type used in a conventional commit.
@@ -48,7 +51,7 @@ var CCTypeMap = map[string]string{
 
 // CmdExecutor defines behavior of building an exec.Command
 type CmdExecutor interface {
-	build(message string) *exec.Cmd
+	build(message string, signed bool) *exec.Cmd
 }
 
 // CCExecutor implements CmdExecutor
@@ -56,7 +59,11 @@ type CCExecutor struct {
 }
 
 // build creates and returns an *exec.Cmd for making git commits
-func (ce *CCExecutor) build(message string) *exec.Cmd {
+func (ce *CCExecutor) build(message string, signed bool) *exec.Cmd {
 	execCmd := exec.Command("git", "commit", "-m", message)
+
+	if signed {
+		execCmd = exec.Command("git", "commit", "-S", "-m", message)
+	}
 	return execCmd
 }

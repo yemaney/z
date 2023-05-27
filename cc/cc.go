@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ import (
 type CLI struct {
 	Out io.Writer
 	In  *bufio.Scanner
-	cc  CC
+	cc  *CC
 	ce  CmdExecutor
 }
 
@@ -20,6 +21,7 @@ func NewCLI(out io.Writer, in io.Reader, ce CmdExecutor) *CLI {
 	return &CLI{
 		Out: out,
 		In:  bufio.NewScanner(in),
+		cc:  &CC{},
 		ce:  ce,
 	}
 }
@@ -157,9 +159,19 @@ func (c *CLI) makeCommit() {
 	input := strings.ToLower(c.readLine())
 
 	if input == "y" || input == "yes" {
-		cmd := c.ce.build(c.cc.message)
+		cmd := c.ce.build(c.cc.message, c.cc.signed)
 		cmd.Stdout = c.Out
 		cmd.Run()
 	}
 
+}
+
+// checkSigned loops through the os.Args and looks for a parameter "s". If it finds it, then
+// the cc signed value will be assigned to true.
+func (c *CLI) checkSigned() {
+	for _, v := range os.Args {
+		if v == "s" {
+			c.cc.signed = true
+		}
+	}
 }

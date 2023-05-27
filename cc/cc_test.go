@@ -3,6 +3,7 @@ package cc
 import (
 	"bytes"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -313,7 +314,7 @@ func TestCommandExecuted(t *testing.T) {
 		},
 	}
 	for _, tC := range testCases {
-		t.Run(tC.confirm + " confirmation", func(t *testing.T) {
+		t.Run(tC.confirm+" confirmation", func(t *testing.T) {
 			_, cli, ce := mockCLI(typ, scope, subject, body, footer, tC.confirm)
 
 			cli.readType()
@@ -332,6 +333,37 @@ func TestCommandExecuted(t *testing.T) {
 		})
 	}
 
+}
+
+func TestCommitSigning(t *testing.T) {
+
+	t.Run("Commit unsigned defualt", func(t *testing.T) {
+		_, cli, _ := mockCLI()
+		os.Args = []string{"cmd", ""}
+
+		cli.checkSigned()
+
+		got := cli.cc.signed
+		want := false
+
+		if got != want {
+			t.Errorf("got %t want %t", got, want)
+		}
+	})
+
+	t.Run("Commit signed correctly", func(t *testing.T) {
+		_, cli, _ := mockCLI()
+		os.Args = []string{"cmd", "s"}
+
+		cli.checkSigned()
+
+		got := cli.cc.signed
+		want := true
+
+		if got != want {
+			t.Errorf("got %t want %t", got, want)
+		}
+	})
 }
 
 func userSends(messages ...string) io.Reader {
@@ -358,7 +390,7 @@ type mockCommandExecutor struct {
 	command string
 }
 
-func (mce *mockCommandExecutor) build(message string) *exec.Cmd {
+func (mce *mockCommandExecutor) build(message string, signed bool) *exec.Cmd {
 	mce.command = "execute"
 	return exec.Command(mce.command)
 }

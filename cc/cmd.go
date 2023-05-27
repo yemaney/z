@@ -13,6 +13,7 @@ var Cmd = &Z.Cmd{
 	Name: `cc`,
 	Call: func(caller *Z.Cmd, none ...string) error {
 		cli := NewCLI(os.Stdout, os.Stdin, &CCExecutor{})
+		cli.checkSigned()
 		cli.writeTypesPrompt()
 		cli.readType()
 		cli.readScope()
