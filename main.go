@@ -1,7 +1,29 @@
 package main
 
-import "github.com/yemaney/z/cc"
+import (
+	Z "github.com/rwxrob/bonzai/z"
+	"github.com/rwxrob/help"
+	"github.com/yemaney/z/cc"
+)
 
 func main() {
-	cc.Cmd.Run()
+	Cmd.Run()
+}
+
+var Cmd = &Z.Cmd{
+	Name:    `z`,
+	Summary: `yemane's bonzai command tree`,
+	Version: `v0.0.1`,
+	Source:  `git@github.com:yemaney/z.git`,
+	Issues:  `github.com/yemaney/z/issues`,
+
+	Commands: []*Z.Cmd{
+		help.Cmd, cc.Cmd,
+	},
+
+	Description: `
+		Hi, I'm yemane and this {{cmd .Name }} is my Bonzai™ tree. I am
+		slowly replacing all my shell scripts and other Go utilities with
+		Bonzai branches that I graft into this {{cmd .Name}} command.
+		`,
 }

@@ -2,7 +2,10 @@ module github.com/yemaney/z
 
 go 1.20
 
-require github.com/rwxrob/bonzai v0.20.10
+require (
+	github.com/rwxrob/bonzai v0.20.10
+	github.com/rwxrob/help v0.7.2
+)
 
 require (
 	github.com/rwxrob/compcmd v0.3.0 // indirect
