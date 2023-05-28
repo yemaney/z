@@ -21,3 +21,13 @@ To activate bash completion just use the `complete -C` option from your `.bashrc
 ```
 complete -C z z
 ```
+
+## Building
+Releases are built using the following commands:
+
+```
+go build -o build/z-linux-amd64
+GOOS=windows GOARCH=amd64 go build -o build/z-windows-amd64
+gh release create
+gh release upload <tag> build/*
+```

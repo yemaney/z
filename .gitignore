@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# Binaries that will be uploaded as releases
+build
