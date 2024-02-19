@@ -4,6 +4,7 @@ import (
 	Z "github.com/rwxrob/bonzai/z"
 	"github.com/rwxrob/help"
 	"github.com/yemaney/z/cc"
+	"github.com/yemaney/z/ssh"
 )
 
 func main() {
@@ -13,12 +14,12 @@ func main() {
 var Cmd = &Z.Cmd{
 	Name:    `z`,
 	Summary: `yemane's bonzai command tree`,
-	Version: `v0.0.1`,
+	Version: `v0.1.0`,
 	Source:  `git@github.com:yemaney/z.git`,
 	Issues:  `github.com/yemaney/z/issues`,
 
 	Commands: []*Z.Cmd{
-		help.Cmd, cc.Cmd,
+		help.Cmd, cc.Cmd, ssh.Cmd,
 	},
 
 	Description: `
