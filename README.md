@@ -4,9 +4,22 @@
 ##  Install
 Just download one of the release [binaries](https://github.com/yemaney/z/releases):
 
-```
-curl -L https://github.com/yemaney/z/releases/latest/download/z-linux-amd64 -o ~/.local/bin/z
-curl -L https://github.com/yemaney/z/releases/latest/download/z-windows-amd64 -o ~/.local/bin/z
+```sh
+#------------ Example ------------##
+
+# Download the tarfile you want.
+curl -LO https://github.com/yemaney/z/releases/download/v0.1.1/z_0.1.1_windows_amd64.tar.gz
+
+tar -xzvf z_0.1.1_windows_amd64.tar.gz
+
+# make sure target directory exists
+mkdir -p "$HOME/.local/bin/"
+
+# Move to binary the binary to target directory for binaries
+mv z "$HOME/.local/bin/"
+
+# Make the binary executable
+chmod +x "$HOME/.local/bin/z"
 ```
 
 Or install directly with `go`:
