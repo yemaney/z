@@ -53,18 +53,18 @@ func (c *CLI) createSection(args []string) error {
 		}
 
 		switch flag {
-		case "-n":
+		case "name":
 			s.host = value
-		case "-host":
+		case "host":
 			s.hostName = value
 			if s.host == "" {
 				s.host = value
 			}
-		case "-u":
+		case "user":
 			s.user = value
-		case "-i":
+		case "identityFile":
 			s.identityFile = value
-		case "-p":
+		case "port":
 			num, err := strconv.Atoi(value)
 			if err != nil {
 				fmt.Fprintf(c.Out, "Error with port %s for host %s. Reverting to default\n", value, s.host)
@@ -76,8 +76,8 @@ func (c *CLI) createSection(args []string) error {
 	}
 
 	if s.hostName == "" {
-		fmt.Fprintln(c.Out, "Please provide the required flags: -host")
-		return &SSHError{"Please provide the required flags: -host"}
+		fmt.Fprintln(c.Out, "Please provide the required flag: host")
+		return &SSHError{"Please provide the required flag: host"}
 	}
 
 	c.newSection = s

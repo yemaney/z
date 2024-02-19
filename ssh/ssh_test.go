@@ -8,7 +8,7 @@ import (
 
 func TestFlags(t *testing.T) {
 	t.Run("Section created correctly", func(t *testing.T) {
-		args := []string{"-n", "example", "-host", "example.com", "-u", "root", "-i", "file.pem", "-p", "22"}
+		args := []string{"name", "example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
 
 		cli := NewCLI(&bytes.Buffer{})
 
@@ -27,20 +27,20 @@ func TestFlags(t *testing.T) {
 	})
 
 	t.Run("Section missing flags raise error", func(t *testing.T) {
-		args := []string{"executableName", "example.com", "-u", "root", "-i", "file.pem"}
+		args := []string{"executableName", "example.com", "user", "root", "identityFile", "file.pem"}
 
 		buffer := bytes.Buffer{}
 
 		cli := NewCLI(&buffer)
 		got := cli.createSection(args)
-		want := &SSHError{"Please provide the required flags: -host"}
+		want := &SSHError{"Please provide the required flag: host"}
 
 		if got == nil || got.Error() != want.Error() {
 			t.Errorf("got %v want %v", got, want)
 		}
 
 		errorMessageGot := buffer.String()
-		errorMessageWant := "Please provide the required flags: -host\n"
+		errorMessageWant := "Please provide the required flag: host\n"
 
 		if errorMessageGot != errorMessageWant {
 			t.Errorf("got %s want %s", errorMessageGot, errorMessageWant)
@@ -53,23 +53,23 @@ func TestParseConfig(t *testing.T) {
 	fileContent := `# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
 Host test
 	HostName test.com
-	User test-user
+	User testuserser
 	IdentityFile ~/Downloads/test.pem
 
 Host build
 	HostName build.com
-	User build-user
+	User builduserser
 	IdentityFile ~/Downloads/build.pem
 
 Host sandbox
 	HostName sandbox.com
-	User sandbox-user
+	User sandboxuserser
 
 `
 	sections := &[]sshSection{
-		{host: "test", hostName: "test.com", user: "test-user", identityFile: "~/Downloads/test.pem"},
-		{host: "build", hostName: "build.com", user: "build-user", identityFile: "~/Downloads/build.pem"},
-		{host: "sandbox", hostName: "sandbox.com", user: "sandbox-user"},
+		{host: "test", hostName: "test.com", user: "testuserser", identityFile: "~/Downloads/test.pem"},
+		{host: "build", hostName: "build.com", user: "builduserser", identityFile: "~/Downloads/build.pem"},
+		{host: "sandbox", hostName: "sandbox.com", user: "sandboxuserser"},
 	}
 
 	cli := &CLI{
@@ -87,7 +87,7 @@ Host sandbox
 	})
 
 	t.Run("Creating config works", func(t *testing.T) {
-		args := []string{"-n", "example", "-host", "example.com", "-u", "root", "-i", "file.pem", "-p", "22"}
+		args := []string{"name", "example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
 
 		cli.createSection(args)
 		cli.parseConfig()

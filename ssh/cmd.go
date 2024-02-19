@@ -5,14 +5,16 @@ import (
 
 	Z "github.com/rwxrob/bonzai/z"
 	"github.com/rwxrob/help"
+	compcmd "github.com/yemaney/z/compcmd"
 )
 
 // exported bonzai leaf that uses uses ssh.CLI to edit an ssh config
 var Cmd = &Z.Cmd{
-	Name:    `ssh`,
+	Name:    `zsh`,
 	Summary: `edit your ssh config file`,
 	Usage:   `-n example -h example.com -u root`,
-
+	Params:  []string{"name", "host", "user", "identityFile", "port"},
+	Comp:    compcmd.New(),
 	Description: `
 		The {{aka}} command provides the ability to update your ssh config file
 		through the command line.

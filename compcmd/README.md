@@ -1,0 +1,1 @@
+Implementing custom Command Completer as per https://github.com/rwxrob/compcmd/issues/2
