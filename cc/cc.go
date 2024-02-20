@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -126,6 +125,11 @@ func (c *CLI) buildMessage() {
 	message := ""
 	message += c.cc.typ
 	message += c.cc.scope
+
+	if c.cc.breaking {
+		message += "!"
+	}
+
 	message += ": "
 	message += c.cc.subject
 
@@ -166,12 +170,17 @@ func (c *CLI) makeCommit() {
 
 }
 
-// checkSigned loops through the os.Args and looks for a parameter "s". If it finds it, then
-// the cc signed value will be assigned to true.
-func (c *CLI) checkSigned() {
-	for _, v := range os.Args {
-		if v == "s" {
+// parseParams loops through all the parameters passed to the command
+// and updates the state of the CC accordingly.
+func (c *CLI) parseParams(args []string) {
+	for i := 0; i < len(args); i++ {
+		param := args[i]
+
+		switch param {
+		case "signed":
 			c.cc.signed = true
+		case "breaking":
+			c.cc.breaking = true
 		}
 	}
 }

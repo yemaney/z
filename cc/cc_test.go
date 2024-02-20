@@ -3,7 +3,6 @@ package cc
 import (
 	"bytes"
 	"io"
-	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -335,13 +334,13 @@ func TestCommandExecuted(t *testing.T) {
 
 }
 
-func TestCommitSigning(t *testing.T) {
+func TestParseParams(t *testing.T) {
 
 	t.Run("Commit unsigned defualt", func(t *testing.T) {
 		_, cli, _ := mockCLI()
-		os.Args = []string{"cmd", ""}
+		args := []string{"cmd", ""}
 
-		cli.checkSigned()
+		cli.parseParams(args)
 
 		got := cli.cc.signed
 		want := false
@@ -353,9 +352,9 @@ func TestCommitSigning(t *testing.T) {
 
 	t.Run("Commit signed correctly", func(t *testing.T) {
 		_, cli, _ := mockCLI()
-		os.Args = []string{"cmd", "s"}
+		args := []string{"cmd", "signed"}
 
-		cli.checkSigned()
+		cli.parseParams(args)
 
 		got := cli.cc.signed
 		want := true

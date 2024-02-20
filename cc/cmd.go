@@ -11,11 +11,11 @@ import (
 var Cmd = &Z.Cmd{
 	Name:    `cc`,
 	Summary: `git commit in the style of conventional commits`,
-	Params:  []string{"s"},
+	Params:  []string{"signed", "breaking"},
 	Comp:    compcmd.New(),
-	Call: func(caller *Z.Cmd, none ...string) error {
+	Call: func(caller *Z.Cmd, args ...string) error {
 		cli := NewCLI(os.Stdout, os.Stdin, &CCExecutor{})
-		cli.checkSigned()
+		cli.parseParams(args)
 		cli.writeTypesPrompt()
 		cli.readType()
 		cli.readScope()

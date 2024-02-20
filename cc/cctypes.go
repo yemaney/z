@@ -6,13 +6,14 @@ import (
 
 // CC represents a conventional commit
 type CC struct {
-	typ     string
-	scope   string
-	subject string
-	body    string
-	footer  string
-	message string
-	signed  bool
+	typ      string
+	scope    string
+	subject  string
+	body     string
+	footer   string
+	message  string
+	signed   bool
+	breaking bool
 }
 
 // An array of strings corrosponding to a type used in a conventional commit.
