@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/yemaney/z/compare/v0.2.0...v1.0.0) (2024-02-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to go 1.22
+
+### Build System
+
+* upgrade to go 1.22 ([3f97f9d](https://github.com/yemaney/z/commit/3f97f9d0da207f3742dc3824c829b226a9f24ce1))
+
 ## [0.2.0](https://github.com/yemaney/z/compare/v0.1.1...v0.2.0) (2024-02-20)
 
 
