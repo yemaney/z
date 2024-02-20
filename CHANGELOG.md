@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/yemaney/z/compare/v0.1.1...v0.2.0) (2024-02-20)
+
+
+### Features
+
+* **cc:** add option for breaking changes commit messages ([cd15fcf](https://github.com/yemaney/z/commit/cd15fcfbf8b73419bb726e64a1140255127e88ce))
+
 ## [0.1.1](https://github.com/yemaney/z/compare/v0.1.0...v0.1.1) (2024-02-19)
 
 
