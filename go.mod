@@ -1,6 +1,6 @@
 module github.com/yemaney/z
 
-go 1.20
+go 1.22
 
 require (
 	github.com/rwxrob/bonzai v0.20.10
