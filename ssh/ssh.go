@@ -119,6 +119,32 @@ func (s *sshConfig) updateSections() {
 	s.sections = &new
 }
 
+func (s *sshConfig) deleteSections(args []string) {
+
+	m := map[string]sshSection{}
+
+	for _, sc := range *s.sections {
+		delete := false
+		for _, v := range args {
+			if sc.host == v {
+				delete = true
+				break
+			}
+
+		}
+		if !delete {
+			m[sc.host] = sc
+		}
+	}
+
+	n := []sshSection{}
+	for _, v := range m {
+		n = append(n, v)
+	}
+
+	s.sections = &n
+}
+
 func (s *sshConfig) loadConfig() error {
 
 	// Get the current user

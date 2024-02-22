@@ -53,30 +53,29 @@ func TestParseConfig(t *testing.T) {
 	fileContent := `# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
 Host test
 	HostName test.com
-	User testuserser
+	User testuser
 	IdentityFile ~/Downloads/test.pem
 
 Host build
 	HostName build.com
-	User builduserser
+	User builduser
 	IdentityFile ~/Downloads/build.pem
 
 Host sandbox
 	HostName sandbox.com
-	User sandboxuserser
+	User sandboxuser
 
 `
 	sections := &[]sshSection{
-		{host: "test", hostName: "test.com", user: "testuserser", identityFile: "~/Downloads/test.pem"},
-		{host: "build", hostName: "build.com", user: "builduserser", identityFile: "~/Downloads/build.pem"},
-		{host: "sandbox", hostName: "sandbox.com", user: "sandboxuserser"},
+		{host: "test", hostName: "test.com", user: "testuser", identityFile: "~/Downloads/test.pem"},
+		{host: "build", hostName: "build.com", user: "builduser", identityFile: "~/Downloads/build.pem"},
+		{host: "sandbox", hostName: "sandbox.com", user: "sandboxuser"},
 	}
 
-	cli := &CLI{
-		Out:       &bytes.Buffer{},
-		sshConfig: &sshConfig{config: &fileContent},
-	}
 	t.Run("Parsing config works", func(t *testing.T) {
+		cli := &CLI{
+			sshConfig: &sshConfig{config: &fileContent},
+		}
 
 		cli.parseConfig()
 
@@ -87,6 +86,24 @@ Host sandbox
 	})
 
 	t.Run("Creating config works", func(t *testing.T) {
+		cli := &CLI{
+			sshConfig: &sshConfig{config: &fileContent},
+		}
+		cli.parseConfig()
+		cli.createConfig()
+
+		want := fileContent
+		got := *cli.config
+
+		if got != want {
+			t.Errorf("got %v, want %v", got, want)
+		}
+
+	})
+	t.Run("Adding section to config works", func(t *testing.T) {
+		cli := &CLI{
+			sshConfig: &sshConfig{config: &fileContent},
+		}
 		args := []string{"name", "example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
 
 		cli.createSection(args)
@@ -104,9 +121,45 @@ Host sandbox
 		want := fileContent + newConfigstr
 		got := *cli.config
 
-		if !reflect.DeepEqual(got, want) {
+		if got != want {
 			t.Errorf("got %v, want %v", got, want)
 		}
 
+		sectionWant := sshSection{host: "example", hostName: "example.com", user: "root", identityFile: "file.pem", port: 22}
+		if !reflect.DeepEqual(cli.newSection, &sectionWant) {
+			t.Errorf("got %v want %v", cli.newSection, sectionWant)
+		}
+
+		sectionsWant := append(*sections, sectionWant)
+		if !reflect.DeepEqual(*cli.sections, sectionsWant) {
+			t.Errorf("got %v want %v", cli.sections, sectionsWant)
+		}
+	})
+
+	t.Run("Deleting section to config works", func(t *testing.T) {
+		cli := &CLI{
+			sshConfig: &sshConfig{config: &fileContent},
+		}
+		args := []string{"test", "build"}
+		cli.parseConfig()
+		cli.deleteSections(args)
+		cli.createConfig()
+
+		newConfigstr := `# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+Host sandbox
+	HostName sandbox.com
+	User sandboxuser
+
+`
+		got := *cli.config
+
+		if got != newConfigstr {
+			t.Errorf("got %v, want %v", got, newConfigstr)
+		}
+
+		sectionsWant := []sshSection{{host: "sandbox", hostName: "sandbox.com", user: "sandboxuser"}}
+		if !reflect.DeepEqual(*cli.sections, sectionsWant) {
+			t.Errorf("got %v want %v", cli.sections, sectionsWant)
+		}
 	})
 }
