@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/yemaney/z/compare/v1.0.0...v1.1.0) (2024-02-22)
+
+
+### Features
+
+* **ssh:** add delete section command ([e2ebcc3](https://github.com/yemaney/z/commit/e2ebcc394c9f90292350fd030acc286839ab09d9))
+
 ## [1.0.0](https://github.com/yemaney/z/compare/v0.2.0...v1.0.0) (2024-02-20)
 
 
