@@ -136,7 +136,7 @@ Host sandbox
 		}
 	})
 
-	t.Run("Deleting section to config works", func(t *testing.T) {
+	t.Run("Deleting section from config works", func(t *testing.T) {
 		cli := &CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
@@ -161,5 +161,64 @@ Host sandbox
 		if !reflect.DeepEqual(*cli.sections, sectionsWant) {
 			t.Errorf("got %v want %v", cli.sections, sectionsWant)
 		}
+	})
+
+	t.Run("Get 1 section from config works", func(t *testing.T) {
+		cli := &CLI{
+			sshConfig: &sshConfig{sections: sections},
+		}
+		args := []string{"test"}
+		s := cli.getSections(args)
+
+		sectionsWant := []sshSection{(*sections)[0]}
+		if !reflect.DeepEqual(s, sectionsWant) {
+			t.Errorf("got %v want %v", s, sectionsWant)
+		}
+
+		gotYaml := s[0].toYAML()
+		wantYaml := `test:
+  hostName: test.com
+  user: testuser
+  identityFile: ~/Downloads/test.pem
+`
+		if gotYaml != wantYaml {
+			t.Errorf("got %v want %v", gotYaml, wantYaml)
+
+		}
+
+	})
+
+	t.Run("Get more than 1 section from config works", func(t *testing.T) {
+
+		buffer := bytes.Buffer{}
+		cli := &CLI{
+			Out:       &buffer,
+			sshConfig: &sshConfig{sections: sections},
+		}
+		args := []string{"test", "build"}
+		s := cli.getSections(args)
+		cli.printSections(s)
+
+		sectionsWant := (*sections)[:2]
+		if !reflect.DeepEqual(s, sectionsWant) {
+			t.Errorf("got %v want %v", s, sectionsWant)
+		}
+
+		gotYaml := buffer.String()
+		wantYaml := `test:
+  hostName: test.com
+  user: testuser
+  identityFile: ~/Downloads/test.pem
+build:
+  hostName: build.com
+  user: builduser
+  identityFile: ~/Downloads/build.pem
+
+`
+		if gotYaml != wantYaml {
+			t.Errorf("got %v want %v", gotYaml, wantYaml)
+
+		}
+
 	})
 }

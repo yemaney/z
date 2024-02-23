@@ -14,7 +14,7 @@ var Cmd = &Z.Cmd{
 	Summary:  `edit your ssh config file`,
 	Params:   []string{"add", "delete"},
 	Comp:     compcmd.New(),
-	Commands: []*Z.Cmd{help.Cmd, addCmd, delCmd},
+	Commands: []*Z.Cmd{help.Cmd, addCmd, delCmd, getCmd},
 }
 
 var addCmd = &Z.Cmd{
@@ -89,6 +89,28 @@ var delCmd = &Z.Cmd{
 		if err != nil {
 			os.Exit(1)
 		}
+		return nil
+	},
+}
+var getCmd = &Z.Cmd{
+	Name:     `get`,
+	Summary:  `get sections from your ssh config file in YAML format`,
+	Usage:    `section-name-1 section-name-2 ...`,
+	Comp:     compcmd.New(),
+	Commands: []*Z.Cmd{help.Cmd},
+	Call: func(caller *Z.Cmd, args ...string) error {
+
+		c := NewCLI(os.Stdout)
+
+		err := c.loadConfig()
+		if err != nil {
+			os.Exit(1)
+		}
+
+		c.parseConfig()
+		s := c.getSections(args)
+		c.printSections(s)
+
 		return nil
 	},
 }

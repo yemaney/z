@@ -28,6 +28,30 @@ type sshSection struct {
 	port         int
 }
 
+func (s sshSection) toYAML() string {
+	var builder strings.Builder
+
+	builder.WriteString(fmt.Sprintf("%s:\n", s.host))
+
+	if s.hostName != "" {
+		builder.WriteString(fmt.Sprintf("  hostName: %s\n", s.hostName))
+	}
+
+	if s.user != "" {
+		builder.WriteString(fmt.Sprintf("  user: %s\n", s.user))
+	}
+
+	if s.identityFile != "" {
+		builder.WriteString(fmt.Sprintf("  identityFile: %s\n", s.identityFile))
+	}
+
+	if s.port != 0 {
+		builder.WriteString(fmt.Sprintf("  port: %v", s.port))
+	}
+
+	return builder.String()
+}
+
 type CLI struct {
 	Out io.Writer
 	*sshConfig
@@ -108,10 +132,20 @@ func (c *CLI) backupAndSave() error {
 	return nil
 }
 
+func (c *CLI) printSections(sections []sshSection) {
+	sc := ""
+
+	for _, v := range sections {
+		sc += v.toYAML()
+	}
+
+	fmt.Fprintln(c.Out, sc)
+}
+
 type sshConfig struct {
 	sections   *[]sshSection
-	newSection *sshSection
 	config     *string
+	newSection *sshSection
 }
 
 func (s *sshConfig) updateSections() {
@@ -143,6 +177,31 @@ func (s *sshConfig) deleteSections(args []string) {
 	}
 
 	s.sections = &n
+}
+
+func (s *sshConfig) getSections(args []string) []sshSection {
+	m := map[string]sshSection{}
+
+	for _, sc := range *s.sections {
+		found := false
+		for _, v := range args {
+			if sc.host == v {
+				found = true
+				break
+			}
+
+		}
+		if found {
+			m[sc.host] = sc
+		}
+	}
+
+	n := []sshSection{}
+	for _, v := range m {
+		n = append(n, v)
+	}
+
+	return n
 }
 
 func (s *sshConfig) loadConfig() error {
