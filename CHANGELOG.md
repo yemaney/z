@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/yemaney/z/compare/v1.1.0...v1.2.0) (2024-02-23)
+
+
+### Features
+
+* **ssh:** add get command ([6917b48](https://github.com/yemaney/z/commit/6917b481fc1e80c3ee8cd5ef87b9bc97b52484dd))
+
+
+### Bug Fixes
+
+* **cc:** remove uneeded commit types ([d768a22](https://github.com/yemaney/z/commit/d768a22c07b2c96f8423dd98b5911d3fd03115cd))
+
 ## [1.1.0](https://github.com/yemaney/z/compare/v1.0.0...v1.1.0) (2024-02-22)
 
 
