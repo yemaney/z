@@ -37,7 +37,7 @@ func getTypesPrompt() string {
 	for _, v := range types {
 		typesString += v
 	}
-	typesString += "\nEnter a number between 0 and 10: "
+	typesString += "\nEnter a number between 0 and 7: "
 	return typesString
 }
 
@@ -59,7 +59,7 @@ func (c *CLI) readType() {
 				break
 			}
 			fails++
-			fmt.Fprint(c.Out, "Enter a valid number between 0 and 10: ")
+			fmt.Fprint(c.Out, "Enter a valid number between 0 and 7: ")
 		}
 	}
 

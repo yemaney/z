@@ -49,26 +49,14 @@ func TestTypes(t *testing.T) {
 			},
 			{
 				in:   "5",
-				want: "perf",
-			},
-			{
-				in:   "6",
 				want: "refactor",
 			},
 			{
-				in:   "7",
-				want: "style",
-			},
-			{
-				in:   "8",
+				in:   "6",
 				want: "test",
 			},
 			{
-				in:   "9",
-				want: "revert",
-			},
-			{
-				in:   "10",
+				in:   "7",
 				want: "chore",
 			},
 		}
@@ -372,7 +360,7 @@ func userSends(messages ...string) io.Reader {
 func typeErrorMsg() string {
 	msg := ""
 	for i := 0; i < 2; i++ {
-		msg += "Enter a valid number between 0 and 10: "
+		msg += "Enter a valid number between 0 and 7: "
 	}
 	return msg
 }
