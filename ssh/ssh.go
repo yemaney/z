@@ -46,7 +46,7 @@ func (s sshSection) toYAML() string {
 	}
 
 	if s.port != 0 {
-		builder.WriteString(fmt.Sprintf("  port: %v", s.port))
+		builder.WriteString(fmt.Sprintf("  port: %v\n", s.port))
 	}
 
 	return builder.String()
@@ -147,21 +147,20 @@ func (c *CLI) printSections(sections []sshSection) {
 }
 
 type sshConfig struct {
-	sections   *[]sshSection
+	sections   []sshSection
 	config     *string
 	newSection *sshSection
 }
 
 func (s *sshConfig) updateSections() {
-	new := append(*s.sections, *s.newSection)
-	s.sections = &new
+	s.sections = append(s.sections, *s.newSection)
 }
 
 func (s *sshConfig) deleteSections(args []string) {
 
 	m := map[string]sshSection{}
 
-	for _, sc := range *s.sections {
+	for _, sc := range s.sections {
 		delete := false
 		for _, v := range args {
 			if sc.host == v {
@@ -180,13 +179,13 @@ func (s *sshConfig) deleteSections(args []string) {
 		n = append(n, v)
 	}
 
-	s.sections = &n
+	s.sections = n
 }
 
 func (s *sshConfig) getSections(args []string) []sshSection {
 	m := map[string]sshSection{}
 
-	for _, sc := range *s.sections {
+	for _, sc := range s.sections {
 		found := false
 		for _, v := range args {
 			if sc.host == v {
@@ -311,7 +310,7 @@ func (s *sshConfig) parseConfig() {
 	if currentSection.host != "" {
 		sections = append(sections, currentSection)
 	}
-	s.sections = &sections
+	s.sections = sections
 }
 
 func (s *sshConfig) createConfig() {
@@ -321,7 +320,7 @@ func (s *sshConfig) createConfig() {
 	builder.WriteString("# Read more about SSH config files: https://linux.die.net/man/5/ssh_config\n")
 
 	// Iterate over sections and build the file content
-	for _, s := range *s.sections {
+	for _, s := range s.sections {
 		builder.WriteString(fmt.Sprintf("Host %s\n", s.host))
 
 		if s.hostName != "" {
@@ -345,4 +344,59 @@ func (s *sshConfig) createConfig() {
 
 	config := builder.String()
 	s.config = &config
+}
+
+func (s *sshConfig) patchSection(args []string) error {
+
+	if len(args) < 3 || len(args)%2 != 1 {
+		fmt.Println("Usage: patchSection <host> <field1> <value1> [<field2> <value2> ...]")
+		return &SSHError{}
+	}
+
+	host := args[0]
+	index := -1
+	var section sshSection
+
+	// Find the section with the specified host
+	for i, sc := range s.sections {
+		if sc.host == host {
+			index = i
+			section = s.sections[i]
+			break
+		}
+	}
+
+	if index == -1 {
+		fmt.Printf("Section %s does not exist.\n", host)
+		return &SSHError{}
+	}
+
+	// Update the specified fields in the section
+	for i := 1; i < len(args); i += 2 {
+		field := args[i]
+		value := args[i+1]
+
+		switch field {
+		case "hostName":
+			section.hostName = value
+		case "user":
+			section.user = value
+		case "identityFile":
+			section.identityFile = value
+		case "port":
+			port, err := strconv.Atoi(value)
+			if err != nil {
+				fmt.Printf("Invalid port value for field %s.\n", field)
+				return &SSHError{}
+			}
+			section.port = port
+		default:
+			fmt.Printf("Invalid field name: %s.\n", field)
+			return &SSHError{}
+		}
+	}
+
+	s.sections[index] = section
+
+	return nil
 }

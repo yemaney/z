@@ -66,14 +66,14 @@ Host sandbox
 	User sandboxuser
 
 `
-	sections := &[]sshSection{
+	sections := []sshSection{
 		{host: "test", hostName: "test.com", user: "testuser", identityFile: "~/Downloads/test.pem"},
 		{host: "build", hostName: "build.com", user: "builduser", identityFile: "~/Downloads/build.pem"},
 		{host: "sandbox", hostName: "sandbox.com", user: "sandboxuser"},
 	}
 
 	t.Run("Parsing config works", func(t *testing.T) {
-		cli := &CLI{
+		cli := CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
 
@@ -86,7 +86,7 @@ Host sandbox
 	})
 
 	t.Run("Creating config works", func(t *testing.T) {
-		cli := &CLI{
+		cli := CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
 		cli.parseConfig()
@@ -101,7 +101,7 @@ Host sandbox
 
 	})
 	t.Run("Adding section to config works", func(t *testing.T) {
-		cli := &CLI{
+		cli := CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
 		args := []string{"example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
@@ -130,14 +130,14 @@ Host sandbox
 			t.Errorf("got %v want %v", cli.newSection, sectionWant)
 		}
 
-		sectionsWant := append(*sections, sectionWant)
-		if !reflect.DeepEqual(*cli.sections, sectionsWant) {
+		sectionsWant := append(sections, sectionWant)
+		if !reflect.DeepEqual(cli.sections, sectionsWant) {
 			t.Errorf("got %v want %v", cli.sections, sectionsWant)
 		}
 	})
 
 	t.Run("Deleting section from config works", func(t *testing.T) {
-		cli := &CLI{
+		cli := CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
 		args := []string{"test", "build"}
@@ -158,19 +158,19 @@ Host sandbox
 		}
 
 		sectionsWant := []sshSection{{host: "sandbox", hostName: "sandbox.com", user: "sandboxuser"}}
-		if !reflect.DeepEqual(*cli.sections, sectionsWant) {
+		if !reflect.DeepEqual(cli.sections, sectionsWant) {
 			t.Errorf("got %v want %v", cli.sections, sectionsWant)
 		}
 	})
 
 	t.Run("Get 1 section from config works", func(t *testing.T) {
-		cli := &CLI{
+		cli := CLI{
 			sshConfig: &sshConfig{sections: sections},
 		}
 		args := []string{"test"}
 		s := cli.getSections(args)
 
-		sectionsWant := []sshSection{(*sections)[0]}
+		sectionsWant := []sshSection{(sections)[0]}
 		if !reflect.DeepEqual(s, sectionsWant) {
 			t.Errorf("got %v want %v", s, sectionsWant)
 		}
@@ -191,7 +191,7 @@ Host sandbox
 	t.Run("Get more than 1 section from config works", func(t *testing.T) {
 
 		buffer := bytes.Buffer{}
-		cli := &CLI{
+		cli := CLI{
 			Out:       &buffer,
 			sshConfig: &sshConfig{sections: sections},
 		}
@@ -199,7 +199,7 @@ Host sandbox
 		s := cli.getSections(args)
 		cli.printSections(s)
 
-		sectionsWant := (*sections)[:2]
+		sectionsWant := (sections)[:2]
 		if !reflect.DeepEqual(s, sectionsWant) {
 			t.Errorf("got %v want %v", s, sectionsWant)
 		}
@@ -217,6 +217,51 @@ build:
 `
 		if gotYaml != wantYaml {
 			t.Errorf("got %v want %v", gotYaml, wantYaml)
+
+		}
+
+	})
+
+	t.Run("Patch section from config works", func(t *testing.T) {
+
+		buffer := bytes.Buffer{}
+		cli := CLI{
+			Out:       &buffer,
+			sshConfig: &sshConfig{sections: sections},
+		}
+		args := []string{"build", "port", "22"}
+		cli.patchSection(args)
+		s := cli.sections
+
+		sectionsWant := []sshSection{
+			{host: "test", hostName: "test.com", user: "testuser", identityFile: "~/Downloads/test.pem"},
+			{host: "build", hostName: "build.com", user: "builduser", identityFile: "~/Downloads/build.pem", port: 22},
+			{host: "sandbox", hostName: "sandbox.com", user: "sandboxuser"},
+		}
+
+		if !reflect.DeepEqual(s, sectionsWant) {
+			t.Errorf("got %v want %v", s, sectionsWant)
+		}
+
+		cli.printSections(s)
+
+		gotYaml := buffer.String()
+		wantYaml := `test:
+  hostName: test.com
+  user: testuser
+  identityFile: ~/Downloads/test.pem
+build:
+  hostName: build.com
+  user: builduser
+  identityFile: ~/Downloads/build.pem
+  port: 22
+sandbox:
+  hostName: sandbox.com
+  user: sandboxuser
+
+`
+		if gotYaml != wantYaml {
+			t.Errorf("got \n%v want \n%v", gotYaml, wantYaml)
 
 		}
 
