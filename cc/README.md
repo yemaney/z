@@ -2,7 +2,15 @@
 
 Conventional commit cli
 
-Enable consistent commit formatting in the style of [conventional commits](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelin)
+Enable consistent commit formatting in the style of **conventional commits** 
+
+1. https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelin
+2. https://www.conventionalcommits.org/
+
+### Parameters
+
+- signed: the commit will be signed <https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits>
+- breaking: the commit message will start with: type! or type(scope)!
 
 ### Commit Message Format
 
@@ -22,12 +30,9 @@ Enable consistent commit formatting in the style of [conventional commits](https
 2.  docs:       Documentation only changes
 3.  feat:       A new feature
 4.  fix:        A bug fix
-5.  perf:       A code change that improves performance
-6.  refactor:   A code change that neither fixes a bug nor adds a feature
-7.  style:      Styling changes that don't affect the code performance or behavior
-8.  test:       Adding missing tests or correcting existing tests
-9.  revert:     If changes are reverted
-10. chore:      Ad-hoc task that doesn't match other types
+5.  refactor:   A code change that neither fixes a bug nor adds a feature
+6.  test:       Adding missing tests or correcting existing tests
+7.  chore:      Ad-hoc task that doesn't match other types
 
 ### Scope
 

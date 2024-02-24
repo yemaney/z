@@ -1,3 +1,4 @@
+// Package cc provides functionality for making conventional commits.
 package cc
 
 import (

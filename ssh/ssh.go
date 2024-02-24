@@ -1,3 +1,4 @@
+// Package ssh provides functionality for interacting with SSH configurations.
 package ssh
 
 import (
@@ -11,6 +12,7 @@ import (
 	"strings"
 )
 
+// SSHError is a custom error type for SSH-related errors.
 type SSHError struct {
 	Message string
 }
@@ -20,6 +22,7 @@ func (ce *SSHError) Error() string {
 	return ce.Message
 }
 
+// sshSection represents a section within an SSH configuration.
 type sshSection struct {
 	host         string
 	hostName     string
@@ -28,6 +31,7 @@ type sshSection struct {
 	port         int
 }
 
+// toYAML converts an sshSection to a YAML formatted string.
 func (s sshSection) toYAML() string {
 	var builder strings.Builder
 
@@ -52,11 +56,13 @@ func (s sshSection) toYAML() string {
 	return builder.String()
 }
 
+// CLI represents a command-line interface for managing SSH configurations.
 type CLI struct {
 	Out io.Writer
 	*sshConfig
 }
 
+// NewCLI creates a new CLI instance with the specified output writer.
 func NewCLI(out io.Writer) *CLI {
 	return &CLI{
 		Out:       out,
@@ -64,6 +70,7 @@ func NewCLI(out io.Writer) *CLI {
 	}
 }
 
+// createSection creates a new SSH section based on the provided command-line arguments.
 func (c *CLI) createSection(args []string) error {
 	s := &sshSection{}
 
@@ -112,6 +119,7 @@ func (c *CLI) createSection(args []string) error {
 	return nil
 }
 
+// backupAndSave backs up the existing SSH config file and saves the new configuration.
 func (c *CLI) backupAndSave() error {
 	// Set the file paths
 	currentUser, _ := user.Current()
@@ -136,6 +144,7 @@ func (c *CLI) backupAndSave() error {
 	return nil
 }
 
+// printSections prints the YAML representation of SSH sections.
 func (c *CLI) printSections(sections []sshSection) {
 	sc := ""
 
@@ -146,16 +155,19 @@ func (c *CLI) printSections(sections []sshSection) {
 	fmt.Fprintln(c.Out, sc)
 }
 
+// sshConfig represents the overall SSH configuration and manages its sections.
 type sshConfig struct {
 	sections   []sshSection
 	config     *string
 	newSection *sshSection
 }
 
+// updateSections adds a new section to the SSH configuration.
 func (s *sshConfig) updateSections() {
 	s.sections = append(s.sections, *s.newSection)
 }
 
+// deleteSections removes specified sections from the SSH configuration.
 func (s *sshConfig) deleteSections(args []string) {
 
 	m := map[string]sshSection{}
@@ -182,6 +194,7 @@ func (s *sshConfig) deleteSections(args []string) {
 	s.sections = n
 }
 
+// getSections retrieves specified sections from the SSH configuration.
 func (s *sshConfig) getSections(args []string) []sshSection {
 	n := []sshSection{}
 
@@ -215,6 +228,7 @@ func (s *sshConfig) getSections(args []string) []sshSection {
 	return n
 }
 
+// loadConfig reads the SSH configuration file and sets it as the sshConfig's config field value
 func (s *sshConfig) loadConfig() error {
 
 	// Get the current user
@@ -264,6 +278,8 @@ func (s *sshConfig) loadConfig() error {
 	return nil
 }
 
+// parseConfig parses the content of the SSH configuration file into a []sshSection and sets it as the
+// sshConfig's sections field value
 func (s *sshConfig) parseConfig() {
 	var sections []sshSection
 	var currentSection sshSection
@@ -321,6 +337,8 @@ func (s *sshConfig) parseConfig() {
 	s.sections = sections
 }
 
+// createConfig generates the content of the SSH configuration file from  the sshConfig's sections field
+// and sets it as the config field value.
 func (s *sshConfig) createConfig() {
 	var builder strings.Builder
 
@@ -354,6 +372,7 @@ func (s *sshConfig) createConfig() {
 	s.config = &config
 }
 
+// patchSection updates specified fields in an existing SSH section.
 func (s *sshConfig) patchSection(args []string) error {
 
 	if len(args) < 3 || len(args)%2 != 1 {

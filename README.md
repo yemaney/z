@@ -2,28 +2,14 @@
 🌳 Personal stateful command tree monolith with Bonzai
 
 ##  Install
-Just download one of the release [binaries](https://github.com/yemaney/z/releases):
+### Option 1: Download and Extract
+- download one of the [releases](https://github.com/yemaney/z/releases)
+- extract the binary `z`
+- make sure its executable
+- place the `z` binary in a folder reachable in your system's PATH.
 
-```sh
-#------------ Example ------------##
 
-# Download the tarfile you want.
-curl -LO https://github.com/yemaney/z/releases/download/v0.1.1/z_0.1.1_windows_amd64.tar.gz
-
-tar -xzvf z_0.1.1_windows_amd64.tar.gz
-
-# make sure target directory exists
-mkdir -p "$HOME/.local/bin/"
-
-# Move to binary the binary to target directory for binaries
-mv z "$HOME/.local/bin/"
-
-# Make the binary executable
-chmod +x "$HOME/.local/bin/z"
-```
-
-Or install directly with `go`:
-
+### Option 2: Install with `go`
 ```
 go install github.com/yemaney/z@latest
 ```
