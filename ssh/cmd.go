@@ -94,8 +94,18 @@ var getCmd = &Z.Cmd{
 	Name:     `get`,
 	Summary:  `get sections from your ssh config file in YAML format`,
 	Usage:    `sectionName1 [sectionName2 ...]`,
+	Params:   []string{"all"},
 	Comp:     compcmd.New(),
 	Commands: []*Z.Cmd{help.Cmd},
+	Description: `
+		The {{aka}} command provides the ability to print sections from your ssh config file
+		in YAML format through the command line.
+
+		Options: 
+
+		all	:	print out all sections in your config 
+
+		`,
 	Call: func(caller *Z.Cmd, args ...string) error {
 
 		c := NewCLI(os.Stdout)

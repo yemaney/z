@@ -183,6 +183,15 @@ func (s *sshConfig) deleteSections(args []string) {
 }
 
 func (s *sshConfig) getSections(args []string) []sshSection {
+	n := []sshSection{}
+
+	if len(args) == 0 {
+		return n
+	}
+	if args[0] == "all" {
+		return s.sections
+	}
+
 	m := map[string]sshSection{}
 
 	for _, sc := range s.sections {
@@ -199,7 +208,6 @@ func (s *sshConfig) getSections(args []string) []sshSection {
 		}
 	}
 
-	n := []sshSection{}
 	for _, v := range m {
 		n = append(n, v)
 	}
