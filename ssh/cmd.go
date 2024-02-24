@@ -12,7 +12,6 @@ import (
 var Cmd = &Z.Cmd{
 	Name:     `ssh`,
 	Summary:  `edit your ssh config file`,
-	Params:   []string{"add", "delete"},
 	Comp:     compcmd.New(),
 	Commands: []*Z.Cmd{help.Cmd, addCmd, delCmd, getCmd},
 }
