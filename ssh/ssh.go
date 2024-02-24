@@ -67,23 +67,24 @@ func NewCLI(out io.Writer) *CLI {
 func (c *CLI) createSection(args []string) error {
 	s := &sshSection{}
 
-	for i := 0; i < len(args); i += 2 {
+	if len(args) < 3 {
+		return &SSHError{"Not Enough Parameters."}
+	}
+
+	s.host = args[0]
+
+	for i := 1; i < len(args); i += 2 {
 		// Access the current and next elements
-		flag := args[i]
+		param := args[i]
 		value := ""
 
 		if i+1 < len(args) {
 			value = args[i+1]
 		}
 
-		switch flag {
-		case "name":
-			s.host = value
+		switch param {
 		case "host":
 			s.hostName = value
-			if s.host == "" {
-				s.host = value
-			}
 		case "user":
 			s.user = value
 		case "identityFile":
@@ -96,6 +97,9 @@ func (c *CLI) createSection(args []string) error {
 			} else {
 				s.port = num
 			}
+		default:
+			fmt.Fprintf(c.Out, "Unsupported Parameter: %s\n", param)
+			return &SSHError{"Unsupported Parameter"}
 		}
 	}
 

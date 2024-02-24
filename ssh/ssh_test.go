@@ -8,7 +8,7 @@ import (
 
 func TestFlags(t *testing.T) {
 	t.Run("Section created correctly", func(t *testing.T) {
-		args := []string{"name", "example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
+		args := []string{"example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
 
 		cli := NewCLI(&bytes.Buffer{})
 
@@ -27,7 +27,7 @@ func TestFlags(t *testing.T) {
 	})
 
 	t.Run("Section missing flags raise error", func(t *testing.T) {
-		args := []string{"executableName", "example.com", "user", "root", "identityFile", "file.pem"}
+		args := []string{"executableName", "user", "root", "identityFile", "file.pem"}
 
 		buffer := bytes.Buffer{}
 
@@ -104,7 +104,7 @@ Host sandbox
 		cli := &CLI{
 			sshConfig: &sshConfig{config: &fileContent},
 		}
-		args := []string{"name", "example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
+		args := []string{"example", "host", "example.com", "user", "root", "identityFile", "file.pem", "port", "22"}
 
 		cli.createSection(args)
 		cli.parseConfig()

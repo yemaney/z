@@ -20,24 +20,23 @@ var Cmd = &Z.Cmd{
 var addCmd = &Z.Cmd{
 	Name:    `add`,
 	Summary: `add a section to your ssh config file`,
-	Usage:   `-n example -h example.com -u root`,
-	Params:  []string{"name", "host", "user", "identityFile", "port"},
+	Usage:   `example name example.com [user root] [identityFile /path/to/key.pem]`,
+	Params:  []string{"host", "user", "identityFile", "port"},
 	Comp:    compcmd.New(),
 	Description: `
 		The {{aka}} command provides the ability to update your ssh config file
 		through the command line.
 
-		Options:
+		Options: 
 
-		-n	 	:	name to identify this ssh section or hostname that should be used to establish the connection
+		host [required]	:	hostname that should be used to establish the connection 
 
-		-host	:	hostname that should be used to establish the connection 
+		user 			:	username to be used for the connection
 
-		-u 		:	username to be used for the connection
+		port 			:	port that the remote SSH daemon is running on. only necessary if the remote SSH instance is not running on the default port 22
 
-		-i 		:	private key that the client should use for authentication when connecting to the ssh server
+		identityFile	:	private key that the client should use for authentication when connecting to the ssh server
 
-		-p 		:	port that the remote SSH daemon is running on. only necessary if the remote SSH instance is not running on the default port 22
 		`,
 	Commands: []*Z.Cmd{help.Cmd},
 	Call: func(caller *Z.Cmd, args ...string) error {
