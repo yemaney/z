@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/yemaney/z/compare/v1.2.0...v1.3.0) (2024-02-24)
+
+
+### Features
+
+* **ssh:** add option to retrieve all sections in get command ([e31247b](https://github.com/yemaney/z/commit/e31247b08e13945c223604c350ba6423f9873db2))
+* **ssh:** add patch command ([e10a78b](https://github.com/yemaney/z/commit/e10a78b873ae721c67bfaf45bb73dd4372998fb1))
+
+
+### Bug Fixes
+
+* **ssh:** remove unneeded params field in exported cmd ([b82b32a](https://github.com/yemaney/z/commit/b82b32a558886a4367b08aa172c00f48a5795cb0))
+
 ## [1.2.0](https://github.com/yemaney/z/compare/v1.1.0...v1.2.0) (2024-02-23)
 
 
