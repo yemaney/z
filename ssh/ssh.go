@@ -238,6 +238,16 @@ func (s *sshConfig) loadConfig() error {
 		return err
 	}
 
+	// check to make sure the directory exists
+	sshDir := filepath.Join(currentUser.HomeDir, ".ssh")
+	if _, err := os.Stat(sshDir); os.IsNotExist(err) {
+		err := os.Mkdir(sshDir, 0700)
+		if err != nil {
+			fmt.Println("Error creating ~/.ssh/ directory\n", err)
+			return err
+		}
+	}
+
 	// Construct the path to the ~/.ssh/config file
 	sshConfigPath := filepath.Join(currentUser.HomeDir, ".ssh", "config")
 
@@ -404,6 +414,8 @@ func (s *sshConfig) patchSection(args []string) error {
 		value := args[i+1]
 
 		switch field {
+		case "host":
+			section.host = value
 		case "hostName":
 			section.hostName = value
 		case "user":

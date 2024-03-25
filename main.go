@@ -15,7 +15,7 @@ func main() {
 var Cmd = &Z.Cmd{
 	Name:    `z`,
 	Summary: `yemane's bonzai command tree`,
-	Version: `v1.3.0`,
+	Version: `v1.3.1`,
 	Source:  `git@github.com:yemaney/z.git`,
 	Issues:  `github.com/yemaney/z/issues`,
 	Comp:    compcmd.New(),
