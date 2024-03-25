@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/yemaney/z/compare/v1.3.0...v1.3.1) (2024-03-25)
+
+
+### Bug Fixes
+
+* **ssh:** enable patch host and create ~/.ssh dir if it doesn't exist ([ff2f3ea](https://github.com/yemaney/z/commit/ff2f3ea2737559283b6ce24fe50db257b8a44028))
+
 ## [1.3.0](https://github.com/yemaney/z/compare/v1.2.0...v1.3.0) (2024-02-24)
 
 
