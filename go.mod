@@ -16,7 +16,8 @@ require (
 	github.com/rwxrob/pegn v0.1.0 // indirect
 	github.com/rwxrob/term v0.2.8 // indirect
 	github.com/rwxrob/to v0.11.2 // indirect
-	golang.org/x/crypto v0.3.0 // indirect
-	golang.org/x/sys v0.2.0 // indirect
-	golang.org/x/term v0.2.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/term v0.13.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

@@ -9,7 +9,7 @@ import (
 var Cmd = &Z.Cmd{
 	Name:     `aws`,
 	Summary:  `Helpful AWS commands`,
-	Commands: []*Z.Cmd{help.Cmd, listCmd, getCmd, startCmd, stopCmd},
+	Commands: []*Z.Cmd{help.Cmd, listCmd, getCmd, startCmd, stopCmd, createCmd, deleteCmd},
 	Comp:     compcmd.New(),
 }
 
@@ -54,6 +54,33 @@ var stopCmd = &Z.Cmd{
 	Commands: []*Z.Cmd{help.Cmd},
 	Call: func(caller *Z.Cmd, args ...string) error {
 		stop(args[0])
+		return nil
+	},
+	MinArgs: 1,
+}
+
+var createCmd = &Z.Cmd{
+	Name:     `create`,
+	Summary:  `create and ec2 instance`,
+	Usage:    `instanceName`,
+	Commands: []*Z.Cmd{help.Cmd},
+	Call: func(caller *Z.Cmd, args ...string) error {
+
+		ami := getLatestImage()
+		create(args[0], *ami.ImageId)
+
+		return nil
+	},
+	MinArgs: 1,
+}
+
+var deleteCmd = &Z.Cmd{
+	Name:     `delete`,
+	Summary:  `delete an ec2 instance`,
+	Usage:    `instanceName|instanceId`,
+	Commands: []*Z.Cmd{help.Cmd},
+	Call: func(caller *Z.Cmd, args ...string) error {
+		delete(args[0])
 		return nil
 	},
 	MinArgs: 1,
