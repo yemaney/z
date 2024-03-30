@@ -13,18 +13,22 @@ import (
 
 // ec2 states
 var (
-	RUNNING = "running"
-	STOPPED = "stopped"
+	RUNNING    = "running"
+	STOPPED    = "stopped"
+	TERMINATED = "terminated"
 )
 
 // list searches for ec2 instances and prints out their name and current state
 func list() {
 
-	result, _ := getInstances()
+	svc := getsvc()
+	result := getInstances(svc)
 
-	// Print information about each instance
 	for _, reservation := range result.Reservations {
 		for _, instance := range reservation.Instances {
+			if *instance.State.Name == TERMINATED {
+				continue
+			}
 			instanceName := getInstanceName(instance)
 			fmt.Printf("%s: %s\n", instanceName, *instance.State.Name)
 		}
@@ -34,8 +38,7 @@ func list() {
 
 // Create a session using the default AWS configuration and credentials
 // Create an EC2 service client
-// Call the DescribeInstances API to list instances
-func getInstances() (*ec2.DescribeInstancesOutput, *ec2.EC2) {
+func getsvc() *ec2.EC2 {
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	})
@@ -45,21 +48,26 @@ func getInstances() (*ec2.DescribeInstancesOutput, *ec2.EC2) {
 	}
 
 	svc := ec2.New(sess)
+	return svc
+}
 
+// Call the DescribeInstances API to list instances
+func getInstances(svc *ec2.EC2) *ec2.DescribeInstancesOutput {
 	result, err := svc.DescribeInstances(nil)
 	if err != nil {
 		fmt.Println("Error describing instances:", err)
 		os.Exit(1)
 	}
-	return result, svc
+	return result
 }
 
 // get searches for an instance and prints information for it.
 // if the instance has a publicIP then the information printed will be in format of an SSH config section
 // otherwise just prints the name and state
 func get(searchString string) {
-	result, _ := getInstances()
 
+	svc := getsvc()
+	result := getInstances(svc)
 	instance := filterInstances(result, searchString)
 
 	if instance != nil {
@@ -88,14 +96,13 @@ func getInstanceName(instance *ec2.Instance) string {
 
 // start searches for an ec2 instance and, if the instance is not running, starts it
 func start(searchString string) {
-	result, svc := getInstances()
 
+	svc := getsvc()
+	result := getInstances(svc)
 	instance := filterInstances(result, searchString)
 
 	if instance != nil {
-		// Check the instance state
 		if *instance.State.Name != RUNNING {
-			// Start the instance if its state is not running
 			fmt.Println("Instance state is not running. Starting instance...")
 			_, err := svc.StartInstances(&ec2.StartInstancesInput{
 				InstanceIds: []*string{instance.InstanceId},
@@ -114,12 +121,13 @@ func start(searchString string) {
 
 // stop searches for an ec2 instance and, if the instance is not in a stopped state, stops it
 func stop(searchString string) {
-	result, svc := getInstances()
 
+	svc := getsvc()
+	result := getInstances(svc)
 	instance := filterInstances(result, searchString)
+
 	if instance != nil {
 		if *instance.State.Name != STOPPED {
-			// Stop the instance if its state is not "stopped"
 			fmt.Println("Instance state is not stopped. Stopping instance...")
 			_, err := svc.StopInstances(&ec2.StopInstancesInput{
 				InstanceIds: []*string{instance.InstanceId},
@@ -150,10 +158,11 @@ func filterInstances(result *ec2.DescribeInstancesOutput, searchString string) *
 }
 
 func getLatestImage() *ec2.Image {
-	_, svc := getInstances()
 
 	owner := "amazon"
-	// Describe Ubuntu AMIs
+
+	svc := getsvc()
+
 	input := &ec2.DescribeImagesInput{
 		Owners: []*string{&owner},
 		Filters: []*ec2.Filter{
@@ -168,7 +177,7 @@ func getLatestImage() *ec2.Image {
 		fmt.Println("Error describing images:", err)
 		os.Exit(1)
 	}
-	// Sort the images by creation date
+
 	sort.Slice(result.Images, func(i, j int) bool {
 		return parseCreationDate(*result.Images[i].CreationDate).Before(parseCreationDate(*result.Images[j].CreationDate))
 	})
@@ -184,14 +193,14 @@ func parseCreationDate(dateStr string) time.Time {
 }
 
 func create(instanceName, ami string) {
-	_, svc := getInstances()
 
-	// Specify the parameters for the new instance
+	svc := getsvc()
 	key := "new_ssh"
 	sg := "sg-03718963ed05bc2f9"
+
 	runInput := &ec2.RunInstancesInput{
-		ImageId:      aws.String(ami),        // Replace with the AMI ID of your choice
-		InstanceType: aws.String("t2.micro"), // Replace with the instance type of your choice
+		ImageId:      aws.String(ami),
+		InstanceType: aws.String("t2.micro"),
 		MinCount:     aws.Int64(1),
 		MaxCount:     aws.Int64(1),
 		KeyName:      &key,
@@ -209,28 +218,24 @@ func create(instanceName, ami string) {
 		SecurityGroupIds: []*string{&sg},
 	}
 
-	// Run the instance
 	runResult, err := svc.RunInstances(runInput)
 	if err != nil {
 		fmt.Println("Error creating instance:", err)
 		os.Exit(1)
 	}
-
-	// Print the instance ID of the newly created instance
 	fmt.Println("Instance created successfully with ID:", *runResult.Instances[0].InstanceId)
 }
 
 func delete(searchString string) error {
-	// Create a new AWS session
-	result, svc := getInstances()
 
+	svc := getsvc()
+	result := getInstances(svc)
 	instance := filterInstances(result, searchString)
 
 	if instance == nil {
 		return nil
 	}
 
-	// Terminate the instance
 	instanceID := instance.InstanceId
 	terminateInput := &ec2.TerminateInstancesInput{
 		InstanceIds: []*string{instanceID},
