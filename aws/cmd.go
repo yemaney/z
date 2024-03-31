@@ -66,10 +66,32 @@ var stopCmd = &Z.Cmd{
 var createCmd = &Z.Cmd{
 	Name:     `create`,
 	Summary:  `create and ec2 instance`,
-	Usage:    `instanceName`,
+	Usage:    `name instanceName type t2.micro key sshkey securitygroup sg-0c00a01e168c82867`,
 	Commands: []*Z.Cmd{help.Cmd, conf.Cmd},
 	Params:   []string{"name", "key", "securitygroup", "type"},
 	Comp:     compcmd.New(),
+	Description: `
+	{{cmd .Name}} is a command for creating an ubuntu based EC2 instance.
+
+	name:	the name tag for the instance
+	key:	the key pair name that will be used to make an SSH connection
+	securitygroup:	the security group to associate with the EC2 instance
+	type:	the instance type (ex t2.micro)
+
+
+	The default values for the options can be configured using the **conf** command.
+	The configuration is expected to be a YAML file with the following schema.
+
+	---
+
+	aws:
+
+	{{ indent 4 "key: new_ssh" }}
+	{{ indent 4 "type: t2.small" }}
+	{{ indent 4 "securitygroup: sg-03718963ed05bc2f9" }}
+	---
+
+	`,
 	Call: func(caller *Z.Cmd, args ...string) error {
 
 		cArgs := CreateArgs{}
@@ -114,7 +136,7 @@ var createCmd = &Z.Cmd{
 			fmt.Println("Require a name for the instance!")
 			os.Exit(1)
 		}
-		ami := getLatestImage()
+		ami := getLatestAmi()
 		cArgs.ami = *ami.ImageId
 
 		create(cArgs)

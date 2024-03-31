@@ -54,7 +54,7 @@ func getsvc() *ec2.EC2 {
 	return svc
 }
 
-// Call the DescribeInstances API to list instances
+// getLatestImage calls the DescribeInstances API to list instances
 func getInstances(svc *ec2.EC2) *ec2.DescribeInstancesOutput {
 	result, err := svc.DescribeInstances(nil)
 	if err != nil {
@@ -84,6 +84,8 @@ func get(searchString string) {
 				fmt.Printf("	IdentityFile %s%s.pem\n", KEYPATH, *instance.KeyName)
 			}
 		}
+	} else {
+		fmt.Println("Instance doesn't exist")
 	}
 
 }
@@ -120,6 +122,8 @@ func start(searchString string) {
 		} else {
 			fmt.Println("Instance is already running.")
 		}
+	} else {
+		fmt.Println("Instance doesn't exist")
 	}
 
 }
@@ -146,6 +150,8 @@ func stop(searchString string) {
 			fmt.Println("Instance is already stopped.")
 		}
 
+	} else {
+		fmt.Println("Instance doesn't exist")
 	}
 
 }
@@ -162,7 +168,8 @@ func filterInstances(result *ec2.DescribeInstancesOutput, searchString string) *
 	return nil
 }
 
-func getLatestImage() *ec2.Image {
+// getLatestAmi searches for the latest ubuntu ami
+func getLatestAmi() *ec2.Image {
 
 	owner := "amazon"
 
@@ -190,13 +197,14 @@ func getLatestImage() *ec2.Image {
 	return result.Images[len(result.Images)-1]
 }
 
-// Function to parse creation date string into time.Time object
+// parseCreationDate parses creation date string into time.Time object
 func parseCreationDate(dateStr string) time.Time {
 	layout := "2006-01-02T15:04:05.000Z" // ISO 8601 format
 	t, _ := time.Parse(layout, dateStr)
 	return t
 }
 
+// create an ec2 instance
 func create(args CreateArgs) {
 
 	svc := getsvc()
@@ -237,13 +245,15 @@ func create(args CreateArgs) {
 	fmt.Println("Instance created successfully with ID:", *runResult.Instances[0].InstanceId)
 }
 
-func delete(searchString string) error {
+// delete searches for an ec2 instance and tries to terminate it
+func delete(id string) error {
 
 	svc := getsvc()
 	result := getInstances(svc)
-	instance := filterInstances(result, searchString)
+	instance := filterInstances(result, id)
 
 	if instance == nil {
+		fmt.Println("Instance doesn't exist")
 		return nil
 	}
 
@@ -261,6 +271,7 @@ func delete(searchString string) error {
 	return nil
 }
 
+// CreateArgs contains arguments used for the create command
 type CreateArgs struct {
 	name          string
 	key           string
