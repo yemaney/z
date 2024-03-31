@@ -22,7 +22,7 @@ var Cmd = &Z.Cmd{
 	Issues:  `github.com/yemaney/z/issues`,
 	Comp:    compcmd.New(),
 	Commands: []*Z.Cmd{
-		help.Cmd, cc.Cmd, ssh.Cmd, aws.Cmd, conf.Cmd
+		help.Cmd, cc.Cmd, ssh.Cmd, aws.Cmd, conf.Cmd,
 	},
 
 	Description: `
