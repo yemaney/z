@@ -197,11 +197,9 @@ func parseCreationDate(dateStr string) time.Time {
 	return t
 }
 
-func create(instanceName, ami string) {
+func create(instanceName, ami, typ, key, sg string) {
 
 	svc := getsvc()
-	key := "new_ssh"
-	sg := "sg-03718963ed05bc2f9"
 
 	runInput := &ec2.RunInstancesInput{
 		ImageId:      aws.String(ami),
@@ -220,7 +218,13 @@ func create(instanceName, ami string) {
 				},
 			},
 		},
-		SecurityGroupIds: []*string{&sg},
+	}
+
+	if sg != "" {
+		runInput.SecurityGroupIds = []*string{aws.String(sg)}
+	}
+	if typ != "" {
+		runInput.InstanceType = aws.String(typ)
 	}
 
 	runResult, err := svc.RunInstances(runInput)
