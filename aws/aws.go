@@ -197,34 +197,36 @@ func parseCreationDate(dateStr string) time.Time {
 	return t
 }
 
-func create(instanceName, ami, typ, key, sg string) {
+func create(args CreateArgs) {
 
 	svc := getsvc()
 
 	runInput := &ec2.RunInstancesInput{
-		ImageId:      aws.String(ami),
+		ImageId:      aws.String(args.ami),
 		InstanceType: aws.String("t2.micro"),
 		MinCount:     aws.Int64(1),
 		MaxCount:     aws.Int64(1),
-		KeyName:      &key,
 		TagSpecifications: []*ec2.TagSpecification{
 			{
 				ResourceType: aws.String("instance"),
 				Tags: []*ec2.Tag{
 					{
 						Key:   aws.String("Name"),
-						Value: aws.String(instanceName),
+						Value: aws.String(args.name),
 					},
 				},
 			},
 		},
 	}
 
-	if sg != "" {
-		runInput.SecurityGroupIds = []*string{aws.String(sg)}
+	if args.securitygroup != "" {
+		runInput.SecurityGroupIds = []*string{aws.String(args.securitygroup)}
 	}
-	if typ != "" {
-		runInput.InstanceType = aws.String(typ)
+	if args.typ != "" {
+		runInput.InstanceType = aws.String(args.typ)
+	}
+	if args.key != "" {
+		runInput.KeyName = &args.key
 	}
 
 	runResult, err := svc.RunInstances(runInput)
@@ -257,4 +259,12 @@ func delete(searchString string) error {
 	fmt.Printf("Terminating Instance: %s\n", *instanceID)
 
 	return nil
+}
+
+type CreateArgs struct {
+	name          string
+	key           string
+	securitygroup string
+	typ           string
+	ami           string
 }

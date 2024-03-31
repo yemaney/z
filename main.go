@@ -2,6 +2,7 @@ package main
 
 import (
 	Z "github.com/rwxrob/bonzai/z"
+	"github.com/rwxrob/conf"
 	"github.com/rwxrob/help"
 	"github.com/yemaney/z/aws"
 	"github.com/yemaney/z/cc"
@@ -21,7 +22,7 @@ var Cmd = &Z.Cmd{
 	Issues:  `github.com/yemaney/z/issues`,
 	Comp:    compcmd.New(),
 	Commands: []*Z.Cmd{
-		help.Cmd, cc.Cmd, ssh.Cmd, aws.Cmd,
+		help.Cmd, cc.Cmd, ssh.Cmd, aws.Cmd, conf.Cmd
 	},
 
 	Description: `

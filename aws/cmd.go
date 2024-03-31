@@ -5,6 +5,7 @@ import (
 	"os"
 
 	Z "github.com/rwxrob/bonzai/z"
+	"github.com/rwxrob/conf"
 	"github.com/rwxrob/help"
 	compcmd "github.com/yemaney/z/compcmd"
 )
@@ -66,44 +67,57 @@ var createCmd = &Z.Cmd{
 	Name:     `create`,
 	Summary:  `create and ec2 instance`,
 	Usage:    `instanceName`,
-	Commands: []*Z.Cmd{help.Cmd},
+	Commands: []*Z.Cmd{help.Cmd, conf.Cmd},
 	Params:   []string{"name", "key", "securitygroup", "type"},
 	Comp:     compcmd.New(),
 	Call: func(caller *Z.Cmd, args ...string) error {
 
-		type Args struct {
-			name          string
-			key           string
-			securitygroup string
-			typ           string
-		}
-		as := Args{}
+		cArgs := CreateArgs{}
 
+		// load defaults from config
+		v, err := Z.Conf.Query(".aws.key")
+		if err != nil {
+			fmt.Println("Error loading conf")
+		}
+		if v != "null" {
+			cArgs.key = v
+		}
+		v, _ = Z.Conf.Query(".aws.type")
+		if v != "null" {
+			cArgs.typ = v
+		}
+		v, _ = Z.Conf.Query(".aws.securitygroup")
+		if v != "null" {
+			cArgs.securitygroup = v
+		}
+
+		// overwrite defaults with any passed values
 		for i := 0; i < len(args); i += 2 {
 			if len(args) <= i+1 {
 				break
 			}
 			if args[i] == "name" {
-				as.name = args[i+1]
+				cArgs.name = args[i+1]
 			} else if args[i] == "key" {
-				as.key = args[i+1]
+				cArgs.key = args[i+1]
 			} else if args[i] == "securitygroup" {
-				as.securitygroup = args[i+1]
+				cArgs.securitygroup = args[i+1]
 			} else if args[i] == "type" {
-				as.typ = args[i+1]
+				cArgs.typ = args[i+1]
 			} else {
 				fmt.Printf("Unsupported option %s\n", args[i])
 				os.Exit(1)
 			}
 
 		}
-		if as.name == "" {
+		if cArgs.name == "" {
 			fmt.Println("Require a name for the instance!")
 			os.Exit(1)
 		}
 		ami := getLatestImage()
+		cArgs.ami = *ami.ImageId
 
-		create(as.name, *ami.ImageId, as.key, as.typ, as.securitygroup)
+		create(cArgs)
 
 		return nil
 	},
