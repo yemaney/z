@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/yemaney/z/compare/v1.3.1...v1.4.0) (2024-03-31)
+
+
+### Features
+
+* **aws:** add aws feat to list, get, start, stop ec2 instances ([e8bd9d0](https://github.com/yemaney/z/commit/e8bd9d038ff39405793b844378d4c0972fade86a))
+* **aws:** add cmds branches to create and delete ec2 instanes ([b1033bb](https://github.com/yemaney/z/commit/b1033bb03cc5871522989e58aa7022c5de1875ee))
+* **aws:** add conf support and arg struct for create cmd ([fccf7af](https://github.com/yemaney/z/commit/fccf7af538091ca77e5a66fd733b54f8c0cc415d))
+* **aws:** add options for create cmd ([3e4a4bc](https://github.com/yemaney/z/commit/3e4a4bc09664cb3a5690e85ec95d02333f759c5d))
+
+
+### Bug Fixes
+
+* add missing comma in commands slice ([285b0e5](https://github.com/yemaney/z/commit/285b0e56df79e91bb44aecb04322e63c8021823f))
+* **aws:** handle cases when keyname is nil and add expected path to key ([45f7084](https://github.com/yemaney/z/commit/45f708482ce6ede4fae7e310d7d09c10764d8f11))
+
 ## [1.3.1](https://github.com/yemaney/z/compare/v1.3.0...v1.3.1) (2024-03-25)
 
 
