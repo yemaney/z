@@ -11,11 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-// ec2 states
-var (
+const (
+	// ec2 states
 	RUNNING    = "running"
 	STOPPED    = "stopped"
 	TERMINATED = "terminated"
+
+	// dir ssh keys are expected to exist in
+	KEYPATH = "~/.ssh/"
 )
 
 // list searches for ec2 instances and prints out their name and current state
@@ -76,8 +79,10 @@ func get(searchString string) {
 		} else {
 			fmt.Printf("Host %s\n", getInstanceName(instance))
 			fmt.Printf("	HostName %s\n", *instance.PublicIpAddress)
-			fmt.Printf("	IdentityFile %s\n", *instance.KeyName)
 			fmt.Printf("	User ubuntu\n")
+			if instance.KeyName != nil {
+				fmt.Printf("	IdentityFile %s%s.pem\n", KEYPATH, *instance.KeyName)
+			}
 		}
 	}
 
